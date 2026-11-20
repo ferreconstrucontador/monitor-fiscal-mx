@@ -1305,7 +1305,7 @@ const SUGERIDAS = ['¿Tope de vales de despensa?', '¿Cómo calcular actualizaci
 
 function Asistente({ data, patch, toast, onClose }) {
   const [msgs, setMsgs] = useState([{ r: 'bot', text: 'Hola, soy tu asistente fiscal y financiero. Funciono 100% en tu dispositivo (sin internet ni costo). Busco en la base legal, tus notas guardadas, los indicadores vigentes y tu agenda.', secs: [] }]);
-  const [q, setQ] = useState(''), [panel, setPanel] = useState(false), [form, setForm] = useState(false);
+  const [q, setQ] = useState(''), [panel, setPanel] = useState(false), [form, setForm] = useState(false), [paste, setPaste] = useState(false), [pasteTxt, setPasteTxt] = useState(''), [pasteErr, setPasteErr] = useState('');
   const [c, setC] = useState({ t: '', cat: 'Otros', kw: '', fund: '', txt: '' });
   const endRef = useRef(), fileRef = useRef();
   useEffect(() => { if (endRef.current) endRef.current.scrollIntoView({ block: 'end' }); }, [msgs]);
@@ -1321,16 +1321,26 @@ function Asistente({ data, patch, toast, onClose }) {
     setC({ t: '', cat: 'Otros', kw: '', fund: '', txt: '' }); setForm(false); toast('Criterio agregado a la base');
   };
   const exportKB = async () => { const r = await exportFile(`monitorfiscal-conocimiento-${localISO()}.json`, JSON.stringify({ app: 'MonitorFiscalMX', tipo: 'conocimiento', version: 1, exportedAt: new Date().toISOString(), criterios: data.criterios }, null, 2), 'Conocimiento MonitorFiscalMX'); if (r.ok) toast(r.via === 'share' ? 'Conocimiento compartido' : 'Conocimiento descargado (.json)'); };
+  // Fusiona criterios sin duplicar (título+categoría) ni borrar los existentes. Lanza error si el formato no es válido.
+  const importText = (text) => {
+    const j = JSON.parse(String(text).replace(/[\u201C\u201D]/g, '"').replace(/^\uFEFF/, '').trim());
+    const arr = Array.isArray(j) ? j : j && (j.criterios || (j.data && j.data.criterios));
+    if (!Array.isArray(arr)) throw new Error('El JSON debe ser una lista de criterios o un objeto con la propiedad "criterios".');
+    const seen = new Set([...KB_BASE, ...data.criterios].map((x) => nrm(x.t) + '|' + nrm(x.cat))), add = [];
+    arr.forEach((x) => { if (!x || !x.t || !x.txt) return; const k = nrm(x.t) + '|' + nrm(x.cat || 'Otros'); if (seen.has(k)) return; seen.add(k); add.push({ id: 'u' + uid(), custom: true, cat: KB_CATS.includes(x.cat) ? x.cat : 'Otros', t: String(x.t), kw: String(x.kw || ''), fund: String(x.fund || ''), txt: String(x.txt), createdAt: new Date().toISOString() }); });
+    patch((d) => ({ criterios: [...d.criterios, ...add] }));
+    return { added: add.length, dup: arr.length - add.length, total: arr.length };
+  };
   const importKB = async (e) => {
     const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
-    try {
-      const j = JSON.parse(await f.text()); const arr = Array.isArray(j) ? j : j.criterios || (j.data && j.data.criterios);
-      if (!Array.isArray(arr)) throw new Error();
-      const seen = new Set([...KB_BASE, ...data.criterios].map((x) => nrm(x.t) + '|' + nrm(x.cat))), add = [];
-      arr.forEach((x) => { if (!x || !x.t || !x.txt) return; const k = nrm(x.t) + '|' + nrm(x.cat || 'Otros'); if (seen.has(k)) return; seen.add(k); add.push({ id: 'u' + uid(), custom: true, cat: KB_CATS.includes(x.cat) ? x.cat : 'Otros', t: String(x.t), kw: String(x.kw || ''), fund: String(x.fund || ''), txt: String(x.txt), createdAt: new Date().toISOString() }); });
-      patch((d) => ({ criterios: [...d.criterios, ...add] })); toast(`Importados ${add.length} criterios nuevos · ${arr.length - add.length} duplicados omitidos`);
-    } catch (er) { toast('Archivo inválido: se esperaba un .json de conocimiento'); }
+    try { const r = importText(await f.text()); toast(`Importados ${r.added} criterios nuevos · ${r.dup} duplicados u omitidos`); } catch (er) { toast('Archivo inválido: se esperaba un .json de conocimiento'); }
   };
+  const procesarPegado = () => {
+    if (!pasteTxt.trim()) return setPasteErr('Pega primero el código JSON.');
+    try { const r = importText(pasteTxt); setPasteErr(''); setPasteTxt(''); setPaste(false); toast(r.added ? `Se ${r.added === 1 ? 'agregó 1 criterio nuevo' : 'agregaron ' + r.added + ' criterios nuevos'}${r.dup ? ` · ${r.dup} duplicados u omitidos` : ''}` : `No hay criterios nuevos (${r.total} ya existían u omitidos por faltar título/explicación)`); }
+    catch (er) { setPasteErr((er instanceof SyntaxError ? 'JSON inválido: ' : 'Formato incorrecto: ') + (er.message || 'revisa el formato')); }
+  };
+  const leerPortapapeles = async () => { try { setPasteTxt(await navigator.clipboard.readText()); setPasteErr(''); } catch (e) { toast('No se pudo leer el portapapeles: pega manualmente en el cuadro'); } };
   const badge = { 'Indicadores vigentes': 'bg-emerald-100 text-emerald-700', Agenda: 'bg-amber-100 text-amber-800', 'Mi criterio': 'bg-violet-100 text-violet-700', 'Mis notas': 'bg-sky-100 text-sky-700', 'Noticia guardada': 'bg-sky-100 text-sky-700' };
   return (
     <div className="fixed inset-0 z-50 bg-slate-100 flex flex-col max-w-xl mx-auto fadein">
@@ -1342,7 +1352,7 @@ function Asistente({ data, patch, toast, onClose }) {
           <button onClick={() => setPanel(!panel)} className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center" aria-label="Conocimiento"><Icon name="Database" size={18} /></button>
         </div>
         {panel && <div className="px-3 pb-3 space-y-2 fadein">
-          <div className="grid grid-cols-2 gap-2"><Btn kind="ghost" icon="Download" onClick={exportKB} className="!text-[12px] !px-2">Exportar Conocimiento (.json)</Btn><Btn kind="ghost" icon="Upload" onClick={() => fileRef.current.click()} className="!text-[12px] !px-2">Importar Conocimiento (.json)</Btn></div>
+          <div className="grid grid-cols-2 gap-2"><Btn kind="ghost" icon="Download" onClick={exportKB} className="!text-[12px] !px-2 col-span-2">Exportar Conocimiento (.json)</Btn><Btn kind="ghost" icon="Upload" onClick={() => fileRef.current.click()} className="!text-[12px] !px-2">Importar Conocimiento (.json)</Btn><Btn kind="ghost" icon="ClipboardPaste" onClick={() => setPaste(true)} className="!text-[12px] !px-2">Pegar JSON</Btn></div>
           <input ref={fileRef} type="file" accept=".json,application/json" className="hidden" onChange={importKB} />
           <div className="text-[11px] text-slate-400">Base: {KB_BASE.length} fichas precargadas + {data.criterios.length} criterios propios · {data.favoritos.length} guardadas. La importación fusiona sin duplicar ni borrar. Tus criterios van en el respaldo para Drive.</div>
           {data.criterios.length > 0 && <div className="max-h-32 overflow-y-auto rounded-lg bg-slate-800 p-2 space-y-1">{data.criterios.map((x) => <div key={x.id} className="flex items-center gap-2 text-[12px]"><span className="flex-1 truncate">{x.cat} · {x.t}</span><button onClick={() => confirm('¿Eliminar este criterio?') && patch((d) => ({ criterios: d.criterios.filter((z) => z.id !== x.id) }))} className="text-rose-300 w-8 h-8"><Icon name="Trash2" size={15} /></button></div>)}</div>}
@@ -1374,6 +1384,13 @@ function Asistente({ data, patch, toast, onClose }) {
           <button type="submit" className="w-12 h-12 shrink-0 rounded-xl bg-sky-600 text-white flex items-center justify-center" aria-label="Enviar"><Icon name="SendHorizontal" size={20} /></button>
         </form>
       </div>
+      {paste && <Sheet title="Pegar JSON de conocimiento" onClose={() => setPaste(false)}>
+        <div className="space-y-3">
+          <p className="text-[13px] text-slate-600">Pega el código JSON (por ejemplo copiado desde Google Keep). Formato: <code className="text-[12px]">{'{"criterios":[{"t":"Título","cat":"LISR","kw":"palabras","fund":"Art. …","txt":"Explicación"}]}'}</code> o una lista directa de criterios. Se fusionan sin duplicar ni borrar los existentes.</p>
+          <textarea className="w-full min-h-[200px] p-3 rounded-xl border border-slate-300 text-[13px] font-mono focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder='{"criterios": [ … ]}' value={pasteTxt} onChange={(e) => { setPasteTxt(e.target.value); setPasteErr(''); }} autoCapitalize="off" autoCorrect="off" spellCheck="false" />
+          {pasteErr && <Note tone="rose">{pasteErr}</Note>}
+          <div className="grid grid-cols-2 gap-2"><Btn kind="ghost" icon="ClipboardPaste" onClick={leerPortapapeles}>Pegar del portapapeles</Btn><Btn icon="Check" onClick={procesarPegado}>Procesar e Importar</Btn></div>
+        </div></Sheet>}
       {form && <Sheet title="Nuevo criterio" onClose={() => setForm(false)}>
         <div className="space-y-3">
           <F label="Título" type="text" ph="Ej. Tope de deducción de gastos de representación" v={c.t} set={(v) => setC({ ...c, t: v })} />
