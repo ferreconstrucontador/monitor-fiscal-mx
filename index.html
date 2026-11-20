@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MonitorFiscalMX</title>
+<meta name="description" content="MonitorFiscalMX: noticias, indicadores Banxico, calculadoras fiscales, laborales y contables de México.">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MonitorFiscalMX">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%2796%27%20fill%3D%27%230f172a%27%2F%3E%3Cpath%20d%3D%27M96%20400h320%27%20stroke%3D%27%2338bdf8%27%20stroke-width%3D%2724%27%20stroke-linecap%3D%27round%27%2F%3E%3Crect%20x%3D%27128%27%20y%3D%27280%27%20width%3D%2756%27%20height%3D%2796%27%20rx%3D%2710%27%20fill%3D%27%2338bdf8%27%2F%3E%3Crect%20x%3D%27228%27%20y%3D%27216%27%20width%3D%2756%27%20height%3D%27160%27%20rx%3D%2710%27%20fill%3D%27%2334d399%27%2F%3E%3Crect%20x%3D%27328%27%20y%3D%27152%27%20width%3D%2756%27%20height%3D%27224%27%20rx%3D%2710%27%20fill%3D%27%23fbbf24%27%2F%3E%3Cpath%20d%3D%27M112%20208l104-72%2080%2040%20104-76%27%20stroke%3D%27%23fff%27%20stroke-width%3D%2722%27%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%2F%3E%3Ccircle%20cx%3D%27400%27%20cy%3D%27100%27%20r%3D%2714%27%20fill%3D%27%23fff%27%2F%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" id="apple-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%2796%27%20fill%3D%27%230f172a%27%2F%3E%3Cpath%20d%3D%27M96%20400h320%27%20stroke%3D%27%2338bdf8%27%20stroke-width%3D%2724%27%20stroke-linecap%3D%27round%27%2F%3E%3Crect%20x%3D%27128%27%20y%3D%27280%27%20width%3D%2756%27%20height%3D%2796%27%20rx%3D%2710%27%20fill%3D%27%2338bdf8%27%2F%3E%3Crect%20x%3D%27228%27%20y%3D%27216%27%20width%3D%2756%27%20height%3D%27160%27%20rx%3D%2710%27%20fill%3D%27%2334d399%27%2F%3E%3Crect%20x%3D%27328%27%20y%3D%27152%27%20width%3D%2756%27%20height%3D%27224%27%20rx%3D%2710%27%20fill%3D%27%23fbbf24%27%2F%3E%3Cpath%20d%3D%27M112%20208l104-72%2080%2040%20104-76%27%20stroke%3D%27%23fff%27%20stroke-width%3D%2722%27%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%2F%3E%3Ccircle%20cx%3D%27400%27%20cy%3D%27100%27%20r%3D%2714%27%20fill%3D%27%23fff%27%2F%3E%3C%2Fsvg%3E">
+<link rel="manifest" id="manifest-link" href="data:application/manifest+json,%7B%22name%22%3A%20%22MonitorFiscalMX%22%2C%20%22short_name%22%3A%20%22MonitorFiscal%22%2C%20%22start_url%22%3A%20%22.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22display_override%22%3A%20%5B%22fullscreen%22%2C%20%22standalone%22%5D%2C%20%22orientation%22%3A%20%22portrait%22%2C%20%22background_color%22%3A%20%22%230f172a%22%2C%20%22theme_color%22%3A%20%22%230f172a%22%2C%20%22lang%22%3A%20%22es-MX%22%2C%20%22icons%22%3A%20%5B%7B%22src%22%3A%20%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%253D%2527http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%2527%2520viewBox%253D%25270%25200%2520512%2520512%2527%253E%253Crect%2520width%253D%2527512%2527%2520height%253D%2527512%2527%2520rx%253D%252796%2527%2520fill%253D%2527%25230f172a%2527%252F%253E%253Cpath%2520d%253D%2527M96%2520400h320%2527%2520stroke%253D%2527%252338bdf8%2527%2520stroke-width%253D%252724%2527%2520stroke-linecap%253D%2527round%2527%252F%253E%253Crect%2520x%253D%2527128%2527%2520y%253D%2527280%2527%2520width%253D%252756%2527%2520height%253D%252796%2527%2520rx%253D%252710%2527%2520fill%253D%2527%252338bdf8%2527%252F%253E%253Crect%2520x%253D%2527228%2527%2520y%253D%2527216%2527%2520width%253D%252756%2527%2520height%253D%2527160%2527%2520rx%253D%252710%2527%2520fill%253D%2527%252334d399%2527%252F%253E%253Crect%2520x%253D%2527328%2527%2520y%253D%2527152%2527%2520width%253D%252756%2527%2520height%253D%2527224%2527%2520rx%253D%252710%2527%2520fill%253D%2527%2523fbbf24%2527%252F%253E%253Cpath%2520d%253D%2527M112%2520208l104-72%252080%252040%2520104-76%2527%2520stroke%253D%2527%2523fff%2527%2520stroke-width%253D%252722%2527%2520fill%253D%2527none%2527%2520stroke-linecap%253D%2527round%2527%2520stroke-linejoin%253D%2527round%2527%252F%253E%253Ccircle%2520cx%253D%2527400%2527%2520cy%253D%2527100%2527%2520r%253D%252714%2527%2520fill%253D%2527%2523fff%2527%252F%253E%253C%252Fsvg%253E%22%2C%20%22sizes%22%3A%20%22any%22%2C%20%22type%22%3A%20%22image%2Fsvg%2Bxml%22%2C%20%22purpose%22%3A%20%22any%20maskable%22%7D%5D%7D">
+<script>
+/* Manifest dinámico: ajusta start_url a la URL real (GitHub Pages) y genera ícono PNG para iOS */
+(function () {
+  try {
+    var icon = decodeURIComponent('data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%2796%27%20fill%3D%27%230f172a%27%2F%3E%3Cpath%20d%3D%27M96%20400h320%27%20stroke%3D%27%2338bdf8%27%20stroke-width%3D%2724%27%20stroke-linecap%3D%27round%27%2F%3E%3Crect%20x%3D%27128%27%20y%3D%27280%27%20width%3D%2756%27%20height%3D%2796%27%20rx%3D%2710%27%20fill%3D%27%2338bdf8%27%2F%3E%3Crect%20x%3D%27228%27%20y%3D%27216%27%20width%3D%2756%27%20height%3D%27160%27%20rx%3D%2710%27%20fill%3D%27%2334d399%27%2F%3E%3Crect%20x%3D%27328%27%20y%3D%27152%27%20width%3D%2756%27%20height%3D%27224%27%20rx%3D%2710%27%20fill%3D%27%23fbbf24%27%2F%3E%3Cpath%20d%3D%27M112%20208l104-72%2080%2040%20104-76%27%20stroke%3D%27%23fff%27%20stroke-width%3D%2722%27%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%2F%3E%3Ccircle%20cx%3D%27400%27%20cy%3D%27100%27%20r%3D%2714%27%20fill%3D%27%23fff%27%2F%3E%3C%2Fsvg%3E'.split(',').slice(1).join(','));
+    var m = {
+      name: 'MonitorFiscalMX', short_name: 'MonitorFiscal', description: 'Noticias, indicadores y calculadoras fiscales de México',
+      start_url: location.href.split('#')[0], scope: location.href.split('#')[0].replace(/[^\/]*$/, ''),
+      display: 'standalone', display_override: ['fullscreen', 'standalone'], orientation: 'portrait',
+      background_color: '#0f172a', theme_color: '#0f172a', lang: 'es-MX',
+      icons: [{ src: 'data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%2796%27%20fill%3D%27%230f172a%27%2F%3E%3Cpath%20d%3D%27M96%20400h320%27%20stroke%3D%27%2338bdf8%27%20stroke-width%3D%2724%27%20stroke-linecap%3D%27round%27%2F%3E%3Crect%20x%3D%27128%27%20y%3D%27280%27%20width%3D%2756%27%20height%3D%2796%27%20rx%3D%2710%27%20fill%3D%27%2338bdf8%27%2F%3E%3Crect%20x%3D%27228%27%20y%3D%27216%27%20width%3D%2756%27%20height%3D%27160%27%20rx%3D%2710%27%20fill%3D%27%2334d399%27%2F%3E%3Crect%20x%3D%27328%27%20y%3D%27152%27%20width%3D%2756%27%20height%3D%27224%27%20rx%3D%2710%27%20fill%3D%27%23fbbf24%27%2F%3E%3Cpath%20d%3D%27M112%20208l104-72%2080%2040%20104-76%27%20stroke%3D%27%23fff%27%20stroke-width%3D%2722%27%20fill%3D%27none%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%2F%3E%3Ccircle%20cx%3D%27400%27%20cy%3D%27100%27%20r%3D%2714%27%20fill%3D%27%23fff%27%2F%3E%3C%2Fsvg%3E', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' }]
+    };
+    if (location.protocol.indexOf('http') === 0) {
+      document.getElementById('manifest-link').href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(m));
+    }
+    var img = new Image();
+    img.onload = function () {
+      var c = document.createElement('canvas'); c.width = c.height = 180;
+      c.getContext('2d').drawImage(img, 0, 0, 180, 180);
+      document.getElementById('apple-icon').href = c.toDataURL('image/png');
+    };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(icon);
+  } catch (e) {}
+})();
+</script>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root { --navy:#0f172a; }
+  html, body { height:100%; margin:0; background:#f1f5f9; -webkit-tap-highlight-color:transparent; overscroll-behavior-y:none; }
+  body { font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:#0f172a; }
+  #root { height:100%; }
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .noscroll::-webkit-scrollbar { display:none; } .noscroll { scrollbar-width:none; }
+  input, select, textarea, button { font-family: inherit; }
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none; }
+  button:active { transform: scale(.98); }
+  .clamp2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .clamp3 { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .fadein { animation: fadein .18s ease-out; } @keyframes fadein { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+  table.t td, table.t th { padding:6px 8px; font-size:12px; white-space:nowrap; }
+</style>
+</head>
+<body>
+<div id="root"><div style="display:flex;height:100%;align-items:center;justify-content:center;color:#0f172a;font-weight:600">Cargando MonitorFiscalMX…</div></div>
+<noscript>MonitorFiscalMX requiere JavaScript.</noscript>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+/* =====================================================================
+   1. UTILIDADES
+   ===================================================================== */
+const num = (v) => { const n = parseFloat(String(v ?? '').replace(/[,$\s%]/g, '')); return isNaN(n) ? 0 : n; };
+const fmt = (n, d = 2) => (typeof n === 'number' && isFinite(n)) ? n.toLocaleString('es-MX', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—';
+const $m = (n) => (n < 0 ? '-$' : '$') + fmt(Math.abs(n));
+const pc = (n, d = 2) => fmt(n, d) + '%';
+const pad2 = (n) => String(n).padStart(2, '0');
+const localISO = (d = new Date()) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const hashStr = (s) => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return 'n' + (h >>> 0).toString(36); };
+const DIAS_MES = 30.4;
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const timeAgo = (iso) => {
+  const t = new Date(iso).getTime(); if (!t) return '';
+  const m = Math.round((Date.now() - t) / 60000);
+  if (m < 1) return 'ahora'; if (m < 60) return `hace ${m} min`;
+  const h = Math.round(m / 60); if (h < 24) return `hace ${h} h`;
+  const d = Math.round(h / 24); if (d < 30) return `hace ${d} d`;
+  return new Date(iso).toLocaleDateString('es-MX');
+};
+const fmtDT = (iso) => iso ? new Date(iso).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
+const stripHtml = (h) => { try { return new DOMParser().parseFromString(h || '', 'text/html').body.textContent.replace(/\s+/g, ' ').trim(); } catch (e) { return h || ''; } };
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) {
+    try { const a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = 0; document.body.appendChild(a); a.select(); const ok = document.execCommand('copy'); a.remove(); return ok; } catch (e2) { return false; }
+  }
+}
+const waLink = (t) => 'https://wa.me/?text=' + encodeURIComponent(t);
+
+/* =====================================================================
+   2. DATOS PREDETERMINADOS (editables en Ajustes) — valores de referencia 2026
+   ===================================================================== */
+const gn = (q) => `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=es-419&gl=MX&ceid=MX:es-419`;
+const DEFAULT_FEEDS = [
+  { id: 'f1', name: 'Google News · DOF / SAT', cat: 'fiscal', url: gn('site:dof.gob.mx OR SAT impuestos fiscal Mexico'), on: true },
+  { id: 'f2', name: 'Google News · CFF / ISR / IVA', cat: 'fiscal', url: gn('CFF ISR IVA resolucion miscelanea fiscal'), on: true },
+  { id: 'f3', name: 'Google News · IMCP / CINIF', cat: 'contable', url: gn('site:imcp.org.mx OR CINIF NIF contabilidad auditoria'), on: true },
+  { id: 'f4', name: 'Google News · IMSS / Infonavit', cat: 'laboral', url: gn('IMSS Infonavit LFT laboral seguridad social Mexico'), on: true },
+  { id: 'f5', name: 'El Economista · Sector financiero', cat: 'finanzas', url: 'https://www.eleconomista.com.mx/rss/sectorfinanciero.xml', on: true },
+  { id: 'f6', name: 'Expansión · Economía', cat: 'finanzas', url: 'https://expansion.mx/rss/economia', on: true },
+  { id: 'f7', name: 'CNBC Top News', cat: 'global', url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', on: true },
+  { id: 'f8', name: 'MarketWatch Top Stories', cat: 'global', url: 'https://feeds.content.dowjones.io/public/rss/mw_topstories', on: true },
+];
+const NEWS_CATS = [['all', 'Todas'], ['fiscal', 'Fiscal/DOF'], ['laboral', 'Laboral/IMSS'], ['contable', 'Contabilidad/IMCP'], ['finanzas', 'Finanzas MX'], ['global', 'Global (EN)']];
+const CAT_LABEL = Object.fromEntries(NEWS_CATS);
+
+// Indicadores (referencia; sincroniza con Banxico o edita manualmente)
+const DEFAULT_IND = {
+  inpc: 141.5, recMora: 1.47, recPror: 0.98,
+  umaD: 117.31, umaM: 3566.22, umaA: 42794.64,
+  smg: 315.04, zlfn: 440.87, umi: 117.31,
+  usd: 18.5, eur: 21.5, tiie: 7.0, udi: 8.9,
+};
+const IND_DEFS = [
+  { k: 'inpc', l: 'INPC', d: 3, bx: 'SP1' }, { k: 'recMora', l: 'Recargos mora', d: 2, suf: '% mens.' }, { k: 'recPror', l: 'Recargos prórroga', d: 2, suf: '% mens.' },
+  { k: 'umaD', l: 'UMA diaria', d: 2, pre: '$' }, { k: 'umaM', l: 'UMA mensual', d: 2, pre: '$' }, { k: 'umaA', l: 'UMA anual', d: 2, pre: '$' },
+  { k: 'smg', l: 'Salario mín. (SMG)', d: 2, pre: '$' }, { k: 'zlfn', l: 'SMG Zona Libre Frontera Norte', d: 2, pre: '$' }, { k: 'umi', l: 'UMI (Infonavit)', d: 2, pre: '$' },
+  { k: 'usd', l: 'USD/MXN FIX', d: 4, pre: '$', bx: 'SF43718' }, { k: 'eur', l: 'EUR/MXN', d: 4, pre: '$' },
+  { k: 'tiie', l: 'TIIE 28 días', d: 4, suf: '%', bx: 'SF43783' }, { k: 'udi', l: 'UDI', d: 6, pre: '$', bx: 'SP68257' },
+];
+
+// Tarifa mensual ISR (Art. 96 LISR, Anexo 8 RMF) — [límite inferior, cuota fija, % excedente]
+const DEFAULT_T = {
+  isr: [[0.01, 0, 1.92], [844.60, 16.22, 6.40], [7168.52, 420.95, 10.88], [12598.03, 1011.68, 16.00], [14644.65, 1339.14, 17.92], [17533.65, 1856.84, 21.36], [35362.84, 5665.16, 23.52], [55736.69, 10457.09, 30.00], [106410.51, 25659.23, 32.00], [141880.67, 37009.69, 34.00], [425642.00, 133488.54, 35.00]],
+  subMonto: 536.21, subLimite: 11492.66,           // Subsidio al empleo mensual (referencia)
+  cyvAnio: 2026,
+  cyv: [3.150, 3.892, 4.629, 5.340, 6.030, 6.582, 7.030, 7.513], // % patronal Cesantía y Vejez por rango (2026, aprox. editable)
+  primaRiesgo: 0.5, isn: 3, seguroViv: 15,
+  topes: { autoComb: 175000, autoElec: 250000, arrComb: 200, arrElec: 850, alimNac: 750, alimExt: 1500, hospNac: 3850, hospExt: 7700 },
+};
+const CYV_2023 = [3.150, 3.544, 3.751, 3.869, 3.953, 4.019, 4.052, 4.241];
+const CYV_2030 = [3.150, 4.356, 5.800, 7.300, 8.800, 10.000, 11.000, 11.875];
+const cyvForYear = (y) => { const t = Math.min(1, Math.max(0, (y - 2023) / 7)); return CYV_2023.map((a, i) => a + (CYV_2030[i] - a) * t); };
+
+const DEFAULT_DATA = {
+  v: 1, createdAt: new Date().toISOString(),
+  token: '', ind: DEFAULT_IND, indMeta: {}, lastSync: null, syncMsg: '',
+  T: DEFAULT_T, feeds: DEFAULT_FEEDS,
+  favoritos: [], notas: {}, recordatorios: [], agendaEstado: {},
+  lastExternalBackup: null, lastNewsFetch: null,
+};
+function mergeData(base, saved) {
+  const d = { ...base, ...saved };
+  d.ind = { ...base.ind, ...(saved.ind || {}) };
+  d.T = { ...base.T, ...(saved.T || {}), topes: { ...base.T.topes, ...((saved.T || {}).topes || {}) } };
+  if (!Array.isArray(d.feeds) || !d.feeds.length) d.feeds = base.feeds;
+  return d;
+}
+const LS_KEY = 'mfmx_data_v1';
+function loadData() {
+  try { const raw = localStorage.getItem(LS_KEY); if (raw) return mergeData(DEFAULT_DATA, JSON.parse(raw)); } catch (e) {}
+  return mergeData(DEFAULT_DATA, {});
+}
+const hasUserData = (d) => !!(d.token || d.favoritos.length || Object.keys(d.notas).length || d.recordatorios.length || Object.keys(d.indMeta).length || Object.keys(d.agendaEstado).length);
+
+/* =====================================================================
+   3. ALMACENAMIENTO: IndexedDB (noticias offline + espejo diario de 7 días)
+   ===================================================================== */
+const DB = {
+  _p: null,
+  open() {
+    if (this._p) return this._p;
+    this._p = new Promise((res, rej) => {
+      try {
+        const r = indexedDB.open('monitorfiscalmx', 1);
+        r.onupgradeneeded = () => { const d = r.result; if (!d.objectStoreNames.contains('news')) d.createObjectStore('news', { keyPath: 'id' }); if (!d.objectStoreNames.contains('backups')) d.createObjectStore('backups', { keyPath: 'date' }); };
+        r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+      } catch (e) { rej(e); }
+    });
+    return this._p;
+  },
+  async run(store, mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => { const t = db.transaction(store, mode); let rq; try { rq = fn(t.objectStore(store)); } catch (e) { rej(e); return; } t.oncomplete = () => res(rq && rq.result); t.onerror = t.onabort = () => rej(t.error); });
+  },
+  getAll(s) { return this.run(s, 'readonly', (o) => o.getAll()).catch(() => []); },
+  put(s, v) { return this.run(s, 'readwrite', (o) => o.put(v)).catch(() => null); },
+  del(s, k) { return this.run(s, 'readwrite', (o) => o.delete(k)).catch(() => null); },
+  async putMany(s, arr) { try { const db = await this.open(); await new Promise((res, rej) => { const t = db.transaction(s, 'readwrite'); const o = t.objectStore(s); arr.forEach((v) => o.put(v)); t.oncomplete = res; t.onerror = t.onabort = () => rej(t.error); }); } catch (e) {} },
+};
+async function mirrorBackup(data) {
+  await DB.put('backups', { date: localISO(), savedAt: new Date().toISOString(), payload: data });
+  const all = (await DB.getAll('backups')).sort((a, b) => b.date.localeCompare(a.date));
+  for (const x of all.slice(7)) await DB.del('backups', x.date);
+}
+
+/* =====================================================================
+   4. RESPALDO EXTERNO (Compartir → Google Drive / WhatsApp)
+   ===================================================================== */
+const buildBackup = (data) => ({ app: 'MonitorFiscalMX', version: 1, exportedAt: new Date().toISOString(), data });
+async function exportBackup(data) {
+  const name = `monitorfiscal-respaldo-${localISO()}.json`;
+  const json = JSON.stringify(buildBackup(data), null, 2);
+  let file = null; try { file = new File([json], name, { type: 'application/json' }); } catch (e) {}
+  if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: 'Respaldo MonitorFiscalMX', text: 'Respaldo MonitorFiscalMX ' + localISO() }); return { ok: true, via: 'share' }; }
+    catch (e) { if (e && e.name === 'AbortError') return { ok: false, cancelled: true }; }
+  }
+  const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  return { ok: true, via: 'download' };
+}
+
+/* =====================================================================
+   5. MOTOR FISCAL / LABORAL COMPARTIDO
+   ===================================================================== */
+// ISR por periodo (tarifa mensual escalada por días/30.4) y subsidio al empleo
+function isrPeriodo(gravable, dias, T) {
+  const f = dias / DIAS_MES, g = Math.max(0, gravable);
+  let row = T.isr[0];
+  for (const r of T.isr) { if (g >= r[0] * f) row = r; else break; }
+  const isr = (g - row[0] * f) * row[2] / 100 + row[1] * f;
+  const sub = g <= T.subLimite * f ? T.subMonto * f : 0;
+  return { isr: Math.max(0, isr), sub, neto: Math.max(0, isr - sub), pct: row[2] };
+}
+const isrAnual = (g, T) => isrPeriodo(g, DIAS_MES * 12, T).isr;
+const vacDias = (a) => { const y = Math.max(1, Math.floor(a)); if (y <= 5) return [12, 14, 16, 18, 20][y - 1]; if (y <= 10) return 22; if (y <= 15) return 24; if (y <= 20) return 26; if (y <= 25) return 28; if (y <= 30) return 30; return 32; };
+const factorInt = (anios, aguin, pv) => 1 + aguin / 365 + (vacDias(anios) * pv / 100) / 365;
+const VACACIONES_TABLA = [[1, 12], [2, 14], [3, 16], [4, 18], [5, 20], ['6-10', 22], ['11-15', 24], ['16-20', 26], ['21-25', 28], ['26-30', 30], ['31-35', 32]];
+function cyvPatronal(sbc, ind, T) {
+  const ratio = sbc / ind.umaD; let i;
+  if (sbc <= ind.smg) i = 0; else if (ratio <= 1.5) i = 1; else if (ratio <= 2) i = 2; else if (ratio <= 2.5) i = 3; else if (ratio <= 3) i = 4; else if (ratio <= 3.5) i = 5; else if (ratio <= 4) i = 6; else i = 7;
+  return T.cyv[i];
+}
+// Cuotas IMSS obrero-patronales para `dias` días
+function imssCuotas(sbc, dias, ind, T, primaRiesgo) {
+  const uma = ind.umaD, s = Math.min(sbc, 25 * uma), exc = Math.max(0, s - 3 * uma), cy = cyvPatronal(s, ind, T);
+  const obrero = [
+    ['Enf. y Mat. excedente 3 UMA (0.40%)', exc * dias * 0.004], ['Prestaciones en dinero (0.25%)', s * dias * 0.0025],
+    ['Gastos médicos pensionados (0.375%)', s * dias * 0.00375], ['Invalidez y Vida (0.625%)', s * dias * 0.00625], ['Cesantía y Vejez (1.125%)', s * dias * 0.01125],
+  ];
+  const patronal = [
+    ['E y M cuota fija (20.40% UMA)', uma * dias * 0.204], ['E y M excedente (1.10%)', exc * dias * 0.011], ['Prestaciones en dinero (0.70%)', s * dias * 0.007],
+    ['Gastos médicos pensionados (1.05%)', s * dias * 0.0105], ['Invalidez y Vida (1.75%)', s * dias * 0.0175], ['Guarderías y Prest. Sociales (1.00%)', s * dias * 0.01],
+    [`Riesgo de trabajo (${fmt(primaRiesgo, 5)}%)`, s * dias * primaRiesgo / 100], ['Retiro (2.00%)', s * dias * 0.02], [`Cesantía y Vejez patronal (${fmt(cy, 3)}%)`, s * dias * cy / 100], ['Infonavit (5.00%)', s * dias * 0.05],
+  ];
+  const sum = (a) => a.reduce((t, x) => t + x[1], 0);
+  return { sbc: s, obrero, patronal, tObrero: sum(obrero), tPatronal: sum(patronal), cyRate: cy };
+}
+// Excedentes de previsión social sobre SBC (Art. 27 LSS): vales 40% UMA, bonos 10% SBC
+function excedentesSBC({ sdFijo, valesDia, bpDia, baDia }, ind) {
+  const exV = Math.max(0, valesDia - 0.4 * ind.umaD), exP = Math.max(0, bpDia - 0.1 * sdFijo), exA = Math.max(0, baDia - 0.1 * sdFijo);
+  return { exV, exP, exA, total: exV + exP + exA };
+}
+const irr = (flows) => {
+  const npv = (r) => flows.reduce((t, c, i) => t + c / Math.pow(1 + r, i), 0);
+  let lo = -0.99, hi = 10; if (npv(lo) * npv(hi) > 0) return NaN;
+  for (let i = 0; i < 200; i++) { const mid = (lo + hi) / 2; if (npv(lo) * npv(mid) <= 0) hi = mid; else lo = mid; }
+  return (lo + hi) / 2;
+};
+
+/* =====================================================================
+   6. COMPONENTES BASE (UI)
+   ===================================================================== */
+const kebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+function Icon({ name, size = 20, className = '', sw = 2 }) {
+  const L = window.lucide; let node = null;
+  if (L && L.icons) node = L.icons[name] || L.icons[kebab(name)] || null;
+  if (node && node[0] === 'svg') node = node[2];
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      {node ? node.map((n, i) => React.createElement(n[0], { key: i, ...n[1] })) : <circle cx="12" cy="12" r="3" />}
+    </svg>
+  );
+}
+const inputCls = 'w-full h-12 px-3 rounded-xl border border-slate-300 bg-white text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500';
+function F({ label, v, set, suffix, prefix, hint, ph, type = 'num' }) {
+  return (
+    <label className="block">
+      {label && <span className="block text-[13px] font-medium text-slate-600 mb-1">{label}</span>}
+      <div className="relative">
+        {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">{prefix}</span>}
+        <input className={inputCls} style={{ paddingLeft: prefix ? 26 : undefined, paddingRight: suffix ? 44 : undefined }} type={type === 'num' ? 'text' : type}
+          inputMode={type === 'num' ? 'decimal' : undefined} value={v} placeholder={ph ?? '0'} onChange={(e) => set(e.target.value)} />
+        {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">{suffix}</span>}
+      </div>
+      {hint && <span className="block text-[11px] text-slate-500 mt-1">{hint}</span>}
+    </label>
+  );
+}
+function S({ label, v, set, options }) {
+  return (
+    <label className="block">
+      {label && <span className="block text-[13px] font-medium text-slate-600 mb-1">{label}</span>}
+      <select className={inputCls} value={v} onChange={(e) => set(e.target.value)}>
+        {options.map(([val, l]) => <option key={val} value={val}>{l}</option>)}
+      </select>
+    </label>
+  );
+}
+function Chk({ label, v, set }) {
+  return (
+    <button type="button" onClick={() => set(!v)} className="flex items-center gap-3 w-full min-h-[48px] text-left">
+      <span className={`w-12 h-7 rounded-full p-0.5 transition ${v ? 'bg-sky-600' : 'bg-slate-300'}`}><span className={`block w-6 h-6 bg-white rounded-full shadow transition ${v ? 'translate-x-5' : ''}`} /></span>
+      <span className="text-sm text-slate-700">{label}</span>
+    </button>
+  );
+}
+const Card = ({ children, className = '' }) => <div className={`bg-white rounded-2xl shadow-sm border border-slate-200 p-4 ${className}`}>{children}</div>;
+const Grid2 = ({ children }) => <div className="grid grid-cols-2 gap-3">{children}</div>;
+const H = ({ children }) => <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide mt-1 mb-2">{children}</h3>;
+const Btn = ({ children, onClick, kind = 'primary', className = '', disabled, icon }) => {
+  const k = { primary: 'bg-sky-600 text-white', dark: 'bg-slate-900 text-white', ghost: 'bg-slate-100 text-slate-800', green: 'bg-emerald-600 text-white', danger: 'bg-rose-600 text-white', amber: 'bg-amber-500 text-slate-900' }[kind];
+  return <button disabled={disabled} onClick={onClick} className={`min-h-[48px] px-4 rounded-xl font-semibold text-[15px] flex items-center justify-center gap-2 disabled:opacity-50 ${k} ${className}`}>{icon && <Icon name={icon} size={18} />}{children}</button>;
+};
+const Note = ({ children, tone = 'slate' }) => <p className={`text-[12px] leading-snug rounded-lg px-3 py-2 ${tone === 'amber' ? 'bg-amber-50 text-amber-800' : tone === 'rose' ? 'bg-rose-50 text-rose-700' : 'bg-slate-100 text-slate-600'}`}>{children}</p>;
+
+const useForm = (init) => { const [f, setF] = useState(init); const set = (k) => (v) => setF((p) => ({ ...p, [k]: v })); return [f, set, setF]; };
+
+// Panel de resultados con "Copiar desglose para WhatsApp".
+// rows: [etiqueta, valor, tipo]  tipo: 'h' encabezado | 's' total destacado | 'm' tenue
+function Res({ title, rows, toast }) {
+  const text = () => `*${title}*\n` + rows.map(([l, v, k]) => (k === 'h' ? `\n_${l}_` : `${l}: ${v}`)).join('\n') + '\n\n— MonitorFiscalMX (' + new Date().toLocaleDateString('es-MX') + ')';
+  return (
+    <div className="mt-4 rounded-2xl overflow-hidden border border-slate-200 bg-white fadein">
+      <div className="bg-slate-900 text-white px-4 py-3 font-semibold text-sm">{title}</div>
+      <div className="divide-y divide-slate-100">
+        {rows.map(([l, v, k], i) => k === 'h'
+          ? <div key={i} className="px-4 py-1.5 bg-slate-50 text-[11px] font-bold uppercase tracking-wide text-slate-500">{l}</div>
+          : <div key={i} className={`px-4 py-2 flex justify-between gap-3 text-sm ${k === 's' ? 'bg-sky-50 font-bold text-slate-900 text-base' : k === 'm' ? 'text-slate-400' : 'text-slate-700'}`}><span>{l}</span><span className="text-right font-mono tabular-nums">{v}</span></div>)}
+      </div>
+      <div className="p-3 flex gap-2">
+        <Btn kind="green" className="flex-1" icon="Copy" onClick={async () => toast((await copyText(text())) ? 'Desglose copiado — pégalo en WhatsApp' : 'No se pudo copiar')}>Copiar desglose para WhatsApp</Btn>
+        <a href={waLink(text())} target="_blank" rel="noopener" className="min-h-[48px] w-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center" aria-label="Abrir WhatsApp"><Icon name="Send" size={18} /></a>
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   7. CALCULADORAS — cada una es un componente { ctx: {ind, T}, toast }
+   ===================================================================== */
+
+/* ---------- 1. SBC (Art. 27 y 30 LSS) ---------- */
+function CalcSBC({ ctx, toast }) {
+  const { ind, T } = ctx;
+  const [f, set] = useForm({ sd: '', anios: '1', aguin: '15', pv: '25', vales: '', bp: '', ba: '', varBim: '', diasBim: '61' });
+  const sd = num(f.sd), fi = factorInt(num(f.anios), num(f.aguin), num(f.pv)), fijo = sd * fi;
+  const variable = num(f.varBim) / (num(f.diasBim) || 61);
+  const ex = excedentesSBC({ sdFijo: fijo, valesDia: num(f.vales) / DIAS_MES, bpDia: num(f.bp) / DIAS_MES, baDia: num(f.ba) / DIAS_MES }, ind);
+  const bruto = fijo + variable + ex.total, sbc = Math.min(bruto, 25 * ind.umaD);
+  const tipo = variable > 0 || ex.total > 0 ? 'Mixto' : 'Fijo';
+  const rows = sd ? [
+    ['Integración', '', 'h'], ['Días de vacaciones (LFT)', String(vacDias(num(f.anios)))], ['Factor de integración', fmt(fi, 4)], ['SBC fijo', $m(fijo), 's'],
+    ['Variable y excedentes', '', 'h'], ['Variable (bimestre anterior ÷ días)', $m(variable)], ['Excedente vales (>40% UMA)', $m(ex.exV)], ['Excedente bono puntualidad (>10% SBC)', $m(ex.exP)], ['Excedente bono asistencia (>10% SBC)', $m(ex.exA)],
+    ['Resultado', '', 'h'], ['SBC calculado', $m(bruto)], [`Tope 25 UMA (${$m(25 * ind.umaD)})`, bruto > 25 * ind.umaD ? 'APLICA' : 'no aplica', 'm'], [`SBC ${tipo}`, $m(sbc), 's'],
+  ] : null;
+  return (<div className="space-y-3">
+    <Grid2><F label="Salario diario nominal" v={f.sd} set={set('sd')} prefix="$" /><F label="Antigüedad (años)" v={f.anios} set={set('anios')} /></Grid2>
+    <Grid2><F label="Días de aguinaldo" v={f.aguin} set={set('aguin')} /><F label="% Prima vacacional" v={f.pv} set={set('pv')} suffix="%" /></Grid2>
+    <H>Ingresos variables y previsión social</H>
+    <Grid2><F label="Vales de despensa (mensual)" v={f.vales} set={set('vales')} prefix="$" hint="Excedente sobre 40% UMA integra" /><F label="Bono puntualidad (mensual)" v={f.bp} set={set('bp')} prefix="$" hint="Excedente sobre 10% SBC" /></Grid2>
+    <Grid2><F label="Bono asistencia (mensual)" v={f.ba} set={set('ba')} prefix="$" /><F label="Variables bimestre anterior" v={f.varBim} set={set('varBim')} prefix="$" hint="Comisiones, h. extra, etc." /></Grid2>
+    <F label="Días del bimestre anterior" v={f.diasBim} set={set('diasBim')} />
+    {rows ? <Res title="Salario Base de Cotización" rows={rows} toast={toast} /> : <Note>Captura el salario diario para calcular.</Note>}
+  </div>);
+}
+
+/* ---------- 2. Simulador de Sueldo Neto ---------- */
+function CalcNomina({ ctx, toast }) {
+  const { ind, T } = ctx;
+  const [f, set] = useForm({ sd: '', per: '15', zona: 'gral', anios: '1', aguin: '15', pv: '25', bp: '', ba: '', vales: '', grat: '', infT: 'no', infV: '', fon: '', pre: '', penT: 'no', penV: '' });
+  const [ex, setEx] = useState([]);
+  const upd = (i, k, v) => setEx((a) => a.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
+  const sd = num(f.sd), dias = num(f.per), smg = f.zona === 'zlfn' ? ind.zlfn : ind.smg;
+  const sueldo = sd * dias, bp = num(f.bp), ba = num(f.ba), vales = num(f.vales), grat = num(f.grat);
+  const valesE = Math.min(vales, ind.umaM * dias / DIAS_MES), valesG = vales - valesE;
+  const exTot = ex.reduce((t, x) => t + num(x.m), 0);
+  const exGrav = ex.reduce((t, x) => t + (x.t === 'g' ? num(x.m) : x.t === 'm' ? Math.max(0, num(x.m) - num(x.e)) : 0), 0);
+  const exExen = exTot - exGrav;
+  const perc = sueldo + bp + ba + vales + grat + exTot;
+  const gravable = sueldo + bp + ba + grat + valesG + exGrav;
+  const r = isrPeriodo(gravable, dias, T);
+  const fijo = sd * factorInt(num(f.anios), num(f.aguin), num(f.pv));
+  const exSBC = excedentesSBC({ sdFijo: fijo, valesDia: vales / dias, bpDia: bp / dias, baDia: ba / dias }, ind);
+  const sbc = Math.min(fijo + exSBC.total + (grat + exTot) / (dias || 1), 25 * ind.umaD);
+  const im = imssCuotas(sbc, dias, ind, T, T.primaRiesgo);
+  const seguro = T.seguroViv * dias / DIAS_MES;
+  const inf = f.infT === 'cuota' ? num(f.infV) * dias / DIAS_MES + seguro : f.infT === 'pct' ? num(f.infV) / 100 * sbc * dias + seguro : f.infT === 'umi' ? num(f.infV) * ind.umi * dias + seguro : 0;
+  const fon = num(f.fon), pre = num(f.pre);
+  const baseNeta = perc - r.neto - im.tObrero;
+  const pen = f.penT === 'neto' ? num(f.penV) / 100 * baseNeta : f.penT === 'total' ? num(f.penV) / 100 * perc : f.penT === 'fijo' ? num(f.penV) : 0;
+  const ded = r.neto + im.tObrero + inf + fon + pre + pen, neto = perc - ded;
+  const rows = sd ? [
+    ['Percepciones', '', 'h'], [`Sueldo (${fmt(dias, dias % 1 ? 1 : 0)} días)`, $m(sueldo)], ...(bp ? [['Bono de puntualidad', $m(bp)]] : []), ...(ba ? [['Bono de asistencia', $m(ba)]] : []),
+    ...(vales ? [['Vales de despensa', $m(vales)]] : []), ...(grat ? [['Gratificaciones', $m(grat)]] : []), ...ex.filter((x) => num(x.m)).map((x) => [x.n || 'Otra percepción', $m(num(x.m))]),
+    ['Total percepciones', $m(perc), 's'], ['Gravado ISR / Exento', `${$m(gravable)} / ${$m(valesE + exExen)}`, 'm'],
+    ['Deducciones', '', 'h'], ['ISR (tarifa Art. 96)', $m(r.isr)], ['(−) Subsidio al empleo', r.sub ? '−' + $m(Math.min(r.sub, r.isr)) : '$0.00'], ['ISR retenido', $m(r.neto)],
+    ...im.obrero.map(([l, v]) => ['IMSS · ' + l, $m(v), 'm']), ['IMSS obrero total', $m(im.tObrero)],
+    ...(inf ? [['Infonavit', $m(inf)]] : []), ...(fon ? [['Fonacot', $m(fon)]] : []), ...(pre ? [['Préstamo empresa', $m(pre)]] : []), ...(pen ? [['Pensión alimenticia', $m(pen)]] : []),
+    ['Total deducciones', $m(ded), 's'], ['SBC utilizado', $m(sbc), 'm'], ['SUELDO NETO', $m(neto), 's'],
+  ] : null;
+  return (<div className="space-y-3">
+    <Grid2><F label="Sueldo diario" v={f.sd} set={set('sd')} prefix="$" /><S label="Periodicidad" v={f.per} set={set('per')} options={[['7', 'Semanal (7)'], ['14', 'Catorcenal (14)'], ['15', 'Quincenal (15)'], ['30.4', 'Mensual (30.4)']]} /></Grid2>
+    <S label="Zona salarial" v={f.zona} set={set('zona')} options={[['gral', 'Zona General'], ['zlfn', 'Zona Libre Frontera Norte']]} />
+    {sd > 0 && sd < smg && <Note tone="rose">El sueldo diario es menor al salario mínimo vigente ({$m(smg)}).</Note>}
+    <Grid2><F label="Antigüedad (años)" v={f.anios} set={set('anios')} /><F label="Días aguinaldo" v={f.aguin} set={set('aguin')} /></Grid2>
+    <F label="% Prima vacacional" v={f.pv} set={set('pv')} suffix="%" />
+    <H>Percepciones del periodo</H>
+    <Grid2><F label="Bono puntualidad" v={f.bp} set={set('bp')} prefix="$" /><F label="Bono asistencia" v={f.ba} set={set('ba')} prefix="$" /></Grid2>
+    <Grid2><F label="Vales de despensa" v={f.vales} set={set('vales')} prefix="$" /><F label="Gratificaciones" v={f.grat} set={set('grat')} prefix="$" /></Grid2>
+    {ex.map((x, i) => (
+      <div key={i} className="rounded-xl border border-slate-200 p-3 space-y-2 bg-slate-50">
+        <div className="flex gap-2"><input className={inputCls} placeholder="Concepto (ej. Comisión)" value={x.n} onChange={(e) => upd(i, 'n', e.target.value)} />
+          <button onClick={() => setEx((a) => a.filter((_, j) => j !== i))} className="w-12 shrink-0 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center"><Icon name="Trash2" size={18} /></button></div>
+        <Grid2><F label="Monto" v={x.m} set={(v) => upd(i, 'm', v)} prefix="$" /><S label="Tratamiento ISR" v={x.t} set={(v) => upd(i, 't', v)} options={[['g', 'Gravada'], ['e', 'Exenta'], ['m', 'Mixta (Art. 93)']]} /></Grid2>
+        {x.t === 'm' && <F label="Parte exenta" v={x.e} set={(v) => upd(i, 'e', v)} prefix="$" />}
+      </div>))}
+    <Btn kind="ghost" icon="Plus" onClick={() => setEx((a) => [...a, { n: '', m: '', t: 'g', e: '' }])} className="w-full">Agregar otra percepción</Btn>
+    <H>Deducciones</H>
+    <Grid2><S label="Infonavit" v={f.infT} set={set('infT')} options={[['no', 'Sin crédito'], ['cuota', 'Cuota fija $ mensual'], ['pct', 'Porcentaje %'], ['umi', 'Factor veces UMI']]} />
+      {f.infT !== 'no' && <F label={f.infT === 'cuota' ? 'Cuota mensual $' : f.infT === 'pct' ? '% del SBC' : 'Veces UMI (mensual)'} v={f.infV} set={set('infV')} />}</Grid2>
+    <Grid2><F label="Fonacot (periodo)" v={f.fon} set={set('fon')} prefix="$" /><F label="Préstamo empresa" v={f.pre} set={set('pre')} prefix="$" /></Grid2>
+    <Grid2><S label="Pensión alimenticia" v={f.penT} set={set('penT')} options={[['no', 'Sin pensión'], ['neto', '% sobre neto'], ['total', '% sobre percepciones'], ['fijo', 'Monto fijo']]} />
+      {f.penT !== 'no' && <F label={f.penT === 'fijo' ? 'Monto $' : 'Porcentaje %'} v={f.penV} set={set('penV')} />}</Grid2>
+    {rows ? <Res title="Recibo de nómina — Sueldo Neto" rows={rows} toast={toast} /> : <Note>Captura el sueldo diario para generar el recibo.</Note>}
+    <Note>ISR con tarifa mensual escalada por días del periodo y subsidio al empleo editable en Ajustes. Vales de despensa exentos hasta 1 UMA mensual proporcional. Pensión "sobre neto" = percepciones − ISR − IMSS.</Note>
+  </div>);
+}
+
+/* ---------- 3. Costo total por trabajador ---------- */
+function CalcCosto({ ctx, toast }) {
+  const { ind, T } = ctx;
+  const [f, set] = useForm({ sd: '', anios: '1', aguin: '15', pv: '25', vales: '', bonos: '', prima: String(T.primaRiesgo), isn: String(T.isn) });
+  const sd = num(f.sd), fi = factorInt(num(f.anios), num(f.aguin), num(f.pv)), fijo = sd * fi;
+  const vales = num(f.vales), bonos = num(f.bonos);
+  const exSBC = excedentesSBC({ sdFijo: fijo, valesDia: vales / DIAS_MES, bpDia: bonos / DIAS_MES / 2, baDia: bonos / DIAS_MES / 2 }, ind);
+  const sbc = Math.min(fijo + exSBC.total, 25 * ind.umaD);
+  const im = imssCuotas(sbc, DIAS_MES, ind, T, num(f.prima));
+  const sueldo = sd * DIAS_MES, provAg = sd * num(f.aguin) / 12, provPv = sd * vacDias(num(f.anios)) * num(f.pv) / 100 / 12;
+  const baseISN = sueldo + vales + bonos + provAg + provPv, isn = baseISN * num(f.isn) / 100;
+  const directo = sueldo + vales + bonos, total = directo + provAg + provPv + im.tPatronal + isn;
+  const rows = sd ? [
+    ['Remuneración mensual', '', 'h'], ['Sueldo (30.4 días)', $m(sueldo)], ['Vales y bonos', $m(vales + bonos)],
+    ['Provisiones mensuales', '', 'h'], ['Aguinaldo', $m(provAg)], ['Prima vacacional', $m(provPv)],
+    ['Cuotas patronales (SBC ' + $m(sbc) + ')', '', 'h'], ...im.patronal.map(([l, v]) => [l, $m(v), 'm']), ['Total cuotas patronales + Infonavit', $m(im.tPatronal)],
+    ['Impuesto sobre nómina', $m(isn)],
+    ['Resultado', '', 'h'], ['COSTO TOTAL MENSUAL', $m(total), 's'], ['Costo anual', $m(total * 12)], ['Sobrecosto sobre el sueldo', pc((total / (sueldo || 1) - 1) * 100), 's'],
+  ] : null;
+  return (<div className="space-y-3">
+    <Grid2><F label="Sueldo diario" v={f.sd} set={set('sd')} prefix="$" /><F label="Antigüedad (años)" v={f.anios} set={set('anios')} /></Grid2>
+    <Grid2><F label="Días aguinaldo" v={f.aguin} set={set('aguin')} /><F label="% Prima vacacional" v={f.pv} set={set('pv')} suffix="%" /></Grid2>
+    <Grid2><F label="Vales (mensual)" v={f.vales} set={set('vales')} prefix="$" /><F label="Bonos (mensual)" v={f.bonos} set={set('bonos')} prefix="$" /></Grid2>
+    <Grid2><F label="Prima riesgo de trabajo" v={f.prima} set={set('prima')} suffix="%" /><F label="ISN estatal" v={f.isn} set={set('isn')} suffix="%" /></Grid2>
+    {rows ? <Res title="Costo total por trabajador" rows={rows} toast={toast} /> : <Note>Captura el sueldo diario.</Note>}
+  </div>);
+}
+
+/* ---------- 4. Liquidación e indemnización ---------- */
+function CalcLiquidacion({ ctx, toast }) {
+  const { ind, T } = ctx;
+  const [f, set] = useForm({ sd: '', ing: '', baj: localISO(), tipo: 'despido', v20: false, aguin: '15', pv: '25', vacPend: '', salPend: '', otros: '', zona: 'gral' });
+  const sd = num(f.sd), a = new Date(f.ing), b = new Date(f.baj);
+  const ok = sd > 0 && !isNaN(a) && !isNaN(b) && b >= a;
+  let rows = null;
+  if (ok) {
+    const anios = (b - a) / 864e5 / 365.25, aniosEnt = Math.floor(anios), frac = anios - aniosEnt;
+    const aniosISR = Math.max(1, aniosEnt + (frac > 0.5 ? 1 : 0));
+    const sdi = sd * factorInt(Math.max(1, aniosEnt), num(f.aguin), num(f.pv));
+    const smg = f.zona === 'zlfn' ? ind.zlfn : ind.smg;
+    const indem = f.tipo === 'despido' ? 90 * sdi : 0;
+    const v20 = f.tipo === 'despido' && f.v20 ? 20 * anios * sdi : 0;
+    const pa = (f.tipo === 'despido' || (f.tipo === 'renuncia' && anios >= 15)) ? 12 * Math.min(sd, 2 * smg) * anios : 0;
+    const ini = new Date(b.getFullYear(), 0, 1), desde = a > ini ? a : ini, diasAnio = Math.min(366, Math.round((b - desde) / 864e5) + 1);
+    const agui = sd * num(f.aguin) * diasAnio / 365;
+    const ult = new Date(a); ult.setFullYear(b.getFullYear()); if (ult > b) ult.setFullYear(b.getFullYear() - 1);
+    const diasServ = Math.max(0, Math.round((b - ult) / 864e5));
+    const vacPr = sd * vacDias(Math.max(1, aniosEnt + 1)) * diasServ / 365, vacPen = sd * num(f.vacPend);
+    const pvac = (vacPr + vacPen) * num(f.pv) / 100, sal = sd * num(f.salPend), otros = num(f.otros);
+    const sep = indem + v20 + pa, exSep = Math.min(sep, 90 * ind.umaD * aniosISR), grSep = sep - exSep;
+    const sueldoM = sd * DIAS_MES;
+    let isrSep = 0, tasa = 0;
+    if (grSep > 0) { const cociente = grSep / aniosISR; const dif = isrPeriodo(sueldoM + cociente, DIAS_MES, T).isr - isrPeriodo(sueldoM, DIAS_MES, T).isr; tasa = dif / cociente; isrSep = grSep * tasa; }
+    const exAg = Math.min(agui, 30 * ind.umaD), exPv = Math.min(pvac, 15 * ind.umaD);
+    const ordGrav = (agui - exAg) + (pvac - exPv) + vacPr + vacPen + sal + otros;
+    const isrOrd = Math.max(0, isrPeriodo(sueldoM + ordGrav, DIAS_MES, T).isr - isrPeriodo(sueldoM, DIAS_MES, T).isr);
+    const total = sep + agui + vacPr + vacPen + pvac + sal + otros, isrT = isrSep + isrOrd;
+    rows = [
+      ['Antigüedad', '', 'h'], ['Años de servicio', fmt(anios, 2)], ['Años para exención (>6 meses = 1)', String(aniosISR)], ['Salario diario integrado', $m(sdi)],
+      ['Separación', '', 'h'], ...(indem ? [['Indemnización constitucional 90 días', $m(indem)]] : []), ...(v20 ? [['20 días por año', $m(v20)]] : []), ['Prima de antigüedad (12 d/año, tope 2 SM)', $m(pa)], ['Subtotal separación', $m(sep), 's'],
+      ['Partes proporcionales', '', 'h'], [`Aguinaldo (${diasAnio} días)`, $m(agui)], ['Vacaciones proporcionales + pendientes', $m(vacPr + vacPen)], ['Prima vacacional', $m(pvac)], ...(sal ? [['Salarios pendientes', $m(sal)]] : []), ...(otros ? [['Otros conceptos', $m(otros)]] : []),
+      ['ISR (Art. 93 XIII, 95, 96 LISR)', '', 'h'], [`Exento (90 UMA × ${aniosISR})`, $m(exSep)], ['Gravable por separación', $m(grSep)], ['Tasa media aplicable', pc(tasa * 100)], ['ISR por separación', $m(isrSep)], ['ISR partes ordinarias (aprox.)', $m(isrOrd)],
+      ['Resultado', '', 'h'], ['Total bruto', $m(total)], ['(−) ISR total', $m(isrT)], ['TOTAL NETO A PAGAR', $m(total - isrT), 's'],
+    ];
+  }
+  return (<div className="space-y-3">
+    <Grid2><F label="Salario diario" v={f.sd} set={set('sd')} prefix="$" /><S label="Zona" v={f.zona} set={set('zona')} options={[['gral', 'General'], ['zlfn', 'ZLFN']]} /></Grid2>
+    <Grid2><F label="Fecha de ingreso" type="date" v={f.ing} set={set('ing')} /><F label="Fecha de baja" type="date" v={f.baj} set={set('baj')} /></Grid2>
+    <S label="Tipo de terminación" v={f.tipo} set={set('tipo')} options={[['despido', 'Despido injustificado'], ['renuncia', 'Renuncia voluntaria'], ['mutuo', 'Mutuo acuerdo / otras']]} />
+    {f.tipo === 'despido' && <Chk label="Incluir 20 días por año (no reinstalación, Art. 50)" v={f.v20} set={set('v20')} />}
+    <Grid2><F label="Días aguinaldo" v={f.aguin} set={set('aguin')} /><F label="% Prima vacacional" v={f.pv} set={set('pv')} suffix="%" /></Grid2>
+    <Grid2><F label="Vacaciones pendientes (días)" v={f.vacPend} set={set('vacPend')} /><F label="Salarios pendientes (días)" v={f.salPend} set={set('salPend')} /></Grid2>
+    <F label="Otros conceptos gravables" v={f.otros} set={set('otros')} prefix="$" />
+    {rows ? <Res title="Liquidación / Indemnización" rows={rows} toast={toast} /> : <Note>Captura salario diario y fechas válidas de ingreso y baja.</Note>}
+    <Note>Cálculo orientativo. Prima de antigüedad por renuncia solo con 15+ años. Validar con asesoría laboral antes de pagar o firmar convenio.</Note>
+  </div>);
+}
+
+/* ---------- 5. Horas extra y días festivos ---------- */
+function CalcExtras({ ctx, toast }) {
+  const { ind } = ctx;
+  const [f, set] = useForm({ sd: '', jornada: '8', horas: '', semanas: '1', desc: '', fest: '' });
+  const sd = num(f.sd), vh = sd / (num(f.jornada) || 8), sem = Math.max(1, num(f.semanas)), h = num(f.horas);
+  const dobles = Math.min(h, 9), triples = Math.max(0, h - 9);
+  const pD = dobles * vh * 2 * sem, pT = triples * vh * 3 * sem, pDesc = num(f.desc) * sd * 2, pFest = num(f.fest) * sd * 2;
+  const baseEx = pD + pDesc + pFest, exento = Math.min(baseEx * 0.5, 5 * ind.umaD * sem), total = pD + pT + pDesc + pFest, grav = total - exento;
+  const rows = sd ? [
+    ['Valor por hora', $m(vh), 'm'], ['Horas dobles (hasta 9 por semana)', `${fmt(dobles * sem, 1)} h → ${$m(pD)}`], ['Horas triples (excedente)', `${fmt(triples * sem, 1)} h → ${$m(pT)}`],
+    ['Descansos laborados (pago doble adicional)', $m(pDesc)], ['Festivos laborados (pago doble adicional)', $m(pFest)], ['Total a pagar', $m(total), 's'],
+    ['ISR (Art. 93 frac. I)', '', 'h'], [`Exento (50%, máx. 5 UMA/sem = ${$m(5 * ind.umaD * sem)})`, $m(exento)], ['Gravado', $m(grav), 's'],
+    ['Integración al SBC', '', 'h'], ['Incremento diario aprox. al SBC variable', $m(total / (7 * sem))], ['Importe para el bimestre', $m(total)],
+  ] : null;
+  return (<div className="space-y-3">
+    <Grid2><F label="Salario diario" v={f.sd} set={set('sd')} prefix="$" /><F label="Horas de jornada" v={f.jornada} set={set('jornada')} /></Grid2>
+    <Grid2><F label="Horas extra por semana" v={f.horas} set={set('horas')} hint="Hasta 3 h/día, 3 días/sem = dobles" /><F label="Semanas del cálculo" v={f.semanas} set={set('semanas')} /></Grid2>
+    <Grid2><F label="Descansos laborados (días)" v={f.desc} set={set('desc')} /><F label="Festivos laborados (días)" v={f.fest} set={set('fest')} /></Grid2>
+    {rows ? <Res title="Horas extra y festivos" rows={rows} toast={toast} /> : <Note>Captura el salario diario.</Note>}
+    <Note>Horas dobles: 3 h diarias máx., 3 veces/sem (Art. 66-68 LFT); triples el excedente, siempre gravadas. El día festivo/descanso laborado se paga doble adicional al salario ordinario.</Note>
+  </div>);
+}
+
+/* ---------- 6. Prima de riesgo (Art. 72 LSS) ---------- */
+function CalcPrima({ ctx, toast }) {
+  const [f, set] = useForm({ S: '', I: '', D: '', N: '', ant: '' });
+  const S = num(f.S), I = num(f.I) / 100, D = num(f.D), N = num(f.N), V = 28, Fc = 2.3, M = 0.005;
+  let rows = null;
+  if (N > 0) {
+    const raw = ((S / 365) + V * (I + D)) * (Fc / N) + M;
+    let p = Math.min(0.15, Math.max(M, raw)); const ant = num(f.ant) / 100;
+    const lim = f.ant !== '' ? Math.min(ant + 0.01, Math.max(ant - 0.01, p)) : p;
+    rows = [['Fórmula: [(S/365) + V(I + D)] × (F/N) + M', '', 'h'], ['S · días subsidiados', fmt(S, 0)], ['I · suma % incap. permanentes ÷ 100', fmt(I, 4)], ['D · defunciones', fmt(D, 0)], ['N · trabajadores expuestos', fmt(N, 0)], ['V = 28, F = 2.3, M = 0.005', '', 'm'],
+      ['Prima calculada', pc(raw * 100, 5)], ['Con mínimo 0.5% / máximo 15%', pc(p * 100, 5)], ...(f.ant !== '' ? [['Límite ±1 punto vs. prima anterior', pc(lim * 100, 5)]] : []), ['PRIMA APLICABLE (a partir de 1° de marzo)', pc(lim * 100, 5), 's']];
+  }
+  return (<div className="space-y-3">
+    <Grid2><F label="S · Días subsidiados" v={f.S} set={set('S')} hint="Incapacidades temporales del año" /><F label="I · Suma % incap. permanentes" v={f.I} set={set('I')} hint="Ej. 15% + 30% = 45" /></Grid2>
+    <Grid2><F label="D · Defunciones por RT" v={f.D} set={set('D')} /><F label="N · Trabajadores promedio" v={f.N} set={set('N')} /></Grid2>
+    <F label="Prima anterior (opcional)" v={f.ant} set={set('ant')} suffix="%" ph="0.5" />
+    {rows ? <Res title="Prima de Riesgo de Trabajo" rows={rows} toast={toast} /> : <Note>Captura N (trabajadores promedio) y los siniestros del año.</Note>}
+    <Note>Se determina con siniestros del 1 de enero al 31 de diciembre y se presenta en febrero (SIPARE/IDSE o portal IMSS). La variación frente a la prima anterior no puede exceder 1 punto porcentual.</Note>
+  </div>);
+}
+
+/* ---------- 7. Modalidad 40 ---------- */
+function CalcMod40({ ctx, toast }) {
+  const { ind, T } = ctx;
+  const [f, set] = useForm({ uma: '10', anio: '2026' });
+  const n = Math.min(25, Math.max(1, num(f.uma))), y = Math.min(2030, Math.max(2023, num(f.anio)));
+  const sbcD = n * ind.umaD, sbcM = sbcD * DIAS_MES, cyvArr = y === T.cyvAnio ? T.cyv : cyvForYear(y);
+  const ratio = n, i = ratio <= 1.5 ? 1 : ratio <= 2 ? 2 : ratio <= 2.5 ? 3 : ratio <= 3 ? 4 : ratio <= 3.5 ? 5 : ratio <= 4 ? 6 : 7;
+  const cyPat = cyvArr[i], tasa = 2.375 + 2 + 1.125 + cyPat;
+  const rows = [['SBC diario elegido', $m(sbcD)], ['SBC mensual (× 30.4)', $m(sbcM)], ['Invalidez y Vida (patrón+obrero 2.375%)', $m(sbcM * 0.02375)], ['Retiro (2.00%)', $m(sbcM * 0.02)], ['Cesantía y Vejez obrero (1.125%)', $m(sbcM * 0.01125)], [`Cesantía y Vejez patronal (${fmt(cyPat, 3)}%)`, $m(sbcM * cyPat / 100)],
+    ['Tasa total', pc(tasa, 3)], ['CUOTA MENSUAL', $m(sbcM * tasa / 100), 's'], ['Cuota bimestral', $m(sbcM * tasa / 100 * 2)], ['Cuota anual', $m(sbcM * tasa / 100 * 12)]];
+  return (<div className="space-y-3">
+    <Grid2><F label="Salario deseado (UMAs, 1 a 25)" v={f.uma} set={set('uma')} suffix="UMA" /><F label="Año de cotización (2023-2030)" v={f.anio} set={set('anio')} /></Grid2>
+    <Res title="Modalidad 40 IMSS" rows={rows} toast={toast} />
+    <Note tone="amber">La tasa de Cesantía y Vejez crece cada año hasta 2030. Para 2026 se usa la tabla editable de Ajustes; otros años se interpolan (aproximación). Confirma contra la tabla oficial del IMSS antes de pagar.</Note>
+  </div>);
+}
+
+/* ---------- 8. Actualización y recargos ---------- */
+function CalcRecargos({ ctx, toast }) {
+  const { ind } = ctx;
+  const [f, set] = useForm({ monto: '', i1: '', i2: '', meses: '', tasa: 'mora' });
+  const monto = num(f.monto), i1 = num(f.i1), i2 = num(f.i2), meses = Math.min(60, Math.floor(num(f.meses)));
+  const factor = i1 > 0 ? Math.max(1, i2 / i1) : 1, act = monto * (factor - 1), tasa = f.tasa === 'mora' ? ind.recMora : ind.recPror;
+  const rec = (monto + act) * tasa / 100 * meses, tot = monto + act + rec;
+  const rows = monto ? [['Factor de actualización (INPC pago ÷ INPC vencimiento)', fmt(factor, 4)], ['Contribución omitida', $m(monto)], ['Actualización (Art. 17-A)', $m(act)], ['Contribución actualizada', $m(monto + act)],
+    [`Recargos (${pc(tasa)} × ${meses} meses, Art. 21)`, $m(rec)], ['TOTAL A PAGAR', $m(tot), 's']] : null;
+  return (<div className="space-y-3">
+    <F label="Contribución omitida" v={f.monto} set={set('monto')} prefix="$" />
+    <Grid2><F label="INPC mes anterior al vencimiento" v={f.i1} set={set('i1')} ph={fmt(ind.inpc, 3)} /><F label="INPC mes anterior al pago" v={f.i2} set={set('i2')} ph={fmt(ind.inpc, 3)} /></Grid2>
+    <Grid2><F label="Meses de atraso (máx. 60)" v={f.meses} set={set('meses')} /><S label="Tasa mensual" v={f.tasa} set={set('tasa')} options={[['mora', `Mora ${pc(ind.recMora)}`], ['pror', `Prórroga ${pc(ind.recPror)}`]]} /></Grid2>
+    {rows ? <Res title="Actualización y Recargos" rows={rows} toast={toast} /> : <Note>Captura la contribución omitida y los INPC.</Note>}
+    <Note>Fracción de mes se cuenta como mes completo. Para multas y gastos de ejecución, calcúlalos aparte.</Note>
+  </div>);
+}
+
+/* ---------- 9. Pagos provisionales PM ---------- */
+function CalcProvisional({ ctx, toast }) {
+  const [f, set] = useForm({ ing: '', cu: '', per: '', pag: '', ret: '', tasa: '30' });
+  const base = Math.max(0, num(f.ing) * num(f.cu) - num(f.per)), isr = base * num(f.tasa) / 100, aPagar = Math.max(0, isr - num(f.pag) - num(f.ret));
+  const rows = num(f.ing) ? [['Ingresos nominales acumulados', $m(num(f.ing))], ['Utilidad fiscal estimada (× CU)', $m(num(f.ing) * num(f.cu))], ['(−) Pérdidas fiscales pendientes', $m(num(f.per))], ['Base del pago provisional', $m(base)],
+    [`ISR causado (${f.tasa}%)`, $m(isr)], ['(−) Pagos provisionales anteriores', $m(num(f.pag))], ['(−) Retenciones de ISR', $m(num(f.ret))], ['ISR A PAGAR DEL PERIODO', $m(aPagar), 's']] : null;
+  return (<div className="space-y-3">
+    <F label="Ingresos nominales acumulados" v={f.ing} set={set('ing')} prefix="$" />
+    <Grid2><F label="Coeficiente de utilidad" v={f.cu} set={set('cu')} ph="0.2000" hint="Ej. 0.2150" /><F label="Tasa ISR" v={f.tasa} set={set('tasa')} suffix="%" /></Grid2>
+    <F label="Pérdidas fiscales pendientes por amortizar" v={f.per} set={set('per')} prefix="$" />
+    <Grid2><F label="Pagos provisionales efectuados" v={f.pag} set={set('pag')} prefix="$" /><F label="Retenciones de ISR" v={f.ret} set={set('ret')} prefix="$" /></Grid2>
+    {rows ? <Res title="Pago provisional ISR — Persona Moral" rows={rows} toast={toast} /> : <Note>Captura los ingresos acumulados.</Note>}
+  </div>);
+}
+
+/* ---------- 10. IVA y retenciones ---------- */
+function CalcIVA({ ctx, toast }) {
+  const [f, set] = useForm({ monto: '', modo: 'desglosar', tasa: '16', ret: 'ninguna' });
+  const m = num(f.monto), t = num(f.tasa) / 100;
+  const base = f.modo === 'desglosar' ? m / (1 + t) : m, iva = base * t, total = base + iva;
+  const ri = f.ret === 'resico' ? 0 : (f.ret === 'honor' || f.ret === 'arr') ? base * 2 / 3 * t : 0;
+  const rIsr = f.ret === 'resico' ? base * 0.0125 : (f.ret === 'honor' || f.ret === 'arr') ? base * 0.10 : 0;
+  const rows = m ? [['Base (subtotal)', $m(base)], [`IVA ${f.tasa}%`, $m(iva)], ['Total facturado', $m(total), 's'],
+    ...(f.ret !== 'ninguna' ? [['Retenciones', '', 'h'], ['ISR retenido', $m(rIsr)], ['IVA retenido', $m(ri)], ['NETO A PAGAR AL PROVEEDOR', $m(total - rIsr - ri), 's']] : [])] : null;
+  return (<div className="space-y-3">
+    <F label="Monto" v={f.monto} set={set('monto')} prefix="$" />
+    <Grid2><S label="Operación" v={f.modo} set={set('modo')} options={[['desglosar', 'Desglosar (monto con IVA)'], ['integrar', 'Integrar (monto sin IVA)']]} /><S label="Tasa IVA" v={f.tasa} set={set('tasa')} options={[['16', '16% General'], ['8', '8% Frontera'], ['0', '0%']]} /></Grid2>
+    <S label="Retenciones (cuando paga una Persona Moral)" v={f.ret} set={set('ret')} options={[['ninguna', 'Sin retención'], ['resico', 'RESICO PF — ISR 1.25%'], ['honor', 'Honorarios — ISR 10% + 2/3 IVA'], ['arr', 'Arrendamiento PF — ISR 10% + 2/3 IVA']]} />
+    {rows ? <Res title="IVA y retenciones" rows={rows} toast={toast} /> : <Note>Captura un monto.</Note>}
+  </div>);
+}
+
+/* ---------- 11. Validador de deducibilidad ---------- */
+function CalcDeduc({ ctx, toast }) {
+  const { T } = ctx; const tp = T.topes;
+  const [f, set] = useForm({ modo: 'compra', tipoV: 'comb', monto: '', dias: '', iva: '16', vModo: 'nac', alim: '', hosp: '', dv: '', pers: '1' });
+  let rows = null, titulo = 'Deducibilidad de automóviles';
+  if (f.modo === 'compra' || f.modo === 'arr') {
+    const m = num(f.monto), iva = m * num(f.iva) / 100;
+    if (f.modo === 'compra') {
+      const tope = f.tipoV === 'comb' ? tp.autoComb : tp.autoElec, prop = m ? Math.min(1, tope / m) : 0;
+      rows = m ? [['Tope de deducción (Art. 36 fr. II)', $m(tope)], ['MOI deducible', $m(Math.min(m, tope))], ['Proporción deducible', pc(prop * 100)], ['Depreciación anual máx. (25%)', $m(Math.min(m, tope) * 0.25)], ['IVA total', $m(iva)], ['IVA acreditable', $m(iva * prop), 's'], ['IVA no acreditable (costo)', $m(iva * (1 - prop))]] : null;
+    } else {
+      const topeD = f.tipoV === 'comb' ? tp.arrComb : tp.arrElec, dias = num(f.dias) || 30, prop = m ? Math.min(1, topeD * dias / m) : 0;
+      rows = m ? [[`Tope diario (Art. 28 fr. XIX): ${$m(topeD)} × ${dias} días`, $m(topeD * dias)], ['Renta deducible', $m(Math.min(m, topeD * dias))], ['Proporción deducible', pc(prop * 100)], ['IVA total', $m(iva)], ['IVA acreditable', $m(iva * prop), 's'], ['IVA no acreditable', $m(iva * (1 - prop))]] : null;
+    }
+  } else {
+    titulo = 'Viáticos — topes diarios';
+    const ext = f.vModo === 'ext', ta = ext ? tp.alimExt : tp.alimNac, th = ext ? tp.hospExt : tp.hospNac, d = num(f.dv) || 1, p = num(f.pers) || 1;
+    const al = num(f.alim), ho = num(f.hosp), alD = Math.min(al, ta * d * p), hoD = Math.min(ho, th * d * p);
+    rows = (al || ho) ? [[`Tope alimentación (${$m(ta)} × ${d} d × ${p} p.)`, $m(ta * d * p)], ['Alimentación deducible', $m(alD)], ['No deducible', $m(al - alD), 'm'], [`Tope hospedaje (${$m(th)} × ${d} d × ${p} p.)`, $m(th * d * p)], ['Hospedaje deducible', $m(hoD)], ['No deducible', $m(ho - hoD), 'm'], ['TOTAL DEDUCIBLE', $m(alD + hoD), 's']] : null;
+  }
+  return (<div className="space-y-3">
+    <S label="Concepto" v={f.modo} set={set('modo')} options={[['compra', 'Compra de automóvil'], ['arr', 'Arrendamiento de automóvil'], ['viat', 'Viáticos (alimentación / hospedaje)']]} />
+    {f.modo !== 'viat' ? (<>
+      <S label="Tipo de vehículo" v={f.tipoV} set={set('tipoV')} options={[['comb', `Combustión (tope ${$m(tp.autoComb)})`], ['elec', `Híbrido / eléctrico (tope ${$m(tp.autoElec)})`]]} />
+      <Grid2><F label={f.modo === 'compra' ? 'Monto de adquisición (sin IVA)' : 'Renta del periodo (sin IVA)'} v={f.monto} set={set('monto')} prefix="$" /><F label="% IVA" v={f.iva} set={set('iva')} suffix="%" /></Grid2>
+      {f.modo === 'arr' && <F label="Días del periodo de renta" v={f.dias} set={set('dias')} ph="30" />}
+    </>) : (<>
+      <S label="Destino" v={f.vModo} set={set('vModo')} options={[['nac', 'Territorio nacional'], ['ext', 'Extranjero']]} />
+      <Grid2><F label="Gasto alimentación" v={f.alim} set={set('alim')} prefix="$" /><F label="Gasto hospedaje" v={f.hosp} set={set('hosp')} prefix="$" /></Grid2>
+      <Grid2><F label="Días del viaje" v={f.dv} set={set('dv')} /><F label="Personas" v={f.pers} set={set('pers')} /></Grid2>
+    </>)}
+    {rows ? <Res title={titulo} rows={rows} toast={toast} /> : <Note>Captura los montos.</Note>}
+    <Note>Los topes son editables en Ajustes → Tarifas. Requisitos adicionales: CFDI, pago por medios electrónicos, estricta indispensabilidad.</Note>
+  </div>);
+}
+
+/* ---------- 12. Depreciación fiscal ---------- */
+function CalcDepre({ ctx, toast }) {
+  const { ind } = ctx;
+  const [f, set] = useForm({ moi: '', fecha: '', tasa: '30', inpcAdq: '', inpcMed: String(ind.inpc), anio: String(new Date().getFullYear()) });
+  const [act, setAct] = useState('30');
+  const ACT = [['10', 'Construcciones (5%)'], ['30', 'Equipo de cómputo (30%)'], ['25', 'Automóviles (25%)'], ['10b', 'Mobiliario y equipo de oficina (10%)'], ['35', 'Maquinaria y equipo (10%)'], ['100', 'Otro % (captura manual)']];
+  const moi = num(f.moi), tasa = num(f.tasa), anio = num(f.anio), d = f.fecha ? new Date(f.fecha) : null;
+  let meses = 12; if (d && !isNaN(d)) { if (d.getFullYear() === anio) meses = 12 - d.getMonth() - (d.getDate() > 15 ? 0.5 : 0); else if (d.getFullYear() > anio) meses = 0; }
+  const hist = moi * tasa / 100 * (meses / 12), factor = num(f.inpcAdq) > 0 ? Math.max(1, num(f.inpcMed) / num(f.inpcAdq)) : 1;
+  const rows = moi ? [['Tasa anual', pc(tasa)], ['Meses en uso en el ejercicio (aprox.)', fmt(meses, 1)], ['Deducción lineal histórica', $m(hist)], ['Factor de actualización (INPC mitad periodo ÷ INPC adquisición)', fmt(factor, 4)], ['DEDUCCIÓN ACTUALIZADA DEL EJERCICIO', $m(hist * factor), 's'], ['Años para depreciar totalmente', tasa ? fmt(100 / tasa, 1) : '—']] : null;
+  return (<div className="space-y-3">
+    <Grid2><F label="Monto original de la inversión (MOI)" v={f.moi} set={set('moi')} prefix="$" /><F label="Fecha de adquisición" type="date" v={f.fecha} set={set('fecha')} /></Grid2>
+    <Grid2><F label="% deducción anual" v={f.tasa} set={set('tasa')} suffix="%" hint="Cómputo 30, autos 25, mobiliario 10, maquinaria 10, construcción 5, transporte 25" /><F label="Ejercicio" v={f.anio} set={set('anio')} /></Grid2>
+    <Grid2><F label="INPC mes de adquisición" v={f.inpcAdq} set={set('inpcAdq')} /><F label="INPC mitad del periodo" v={f.inpcMed} set={set('inpcMed')} /></Grid2>
+    {rows ? <Res title="Depreciación fiscal (Art. 31 LISR)" rows={rows} toast={toast} /> : <Note>Captura el MOI.</Note>}
+  </div>);
+}
+
+/* ---------- 13. Punto de equilibrio y razones ---------- */
+function CalcEquilibrio({ ctx, toast }) {
+  const [f, set] = useForm({ cf: '', p: '', cv: '', ac: '', pcir: '', inv: '' });
+  const cf = num(f.cf), p = num(f.p), cv = num(f.cv), mc = p - cv, mcp = p ? mc / p : 0;
+  const rows = cf && mc > 0 ? [['Margen de contribución unitario', $m(mc)], ['Margen de contribución %', pc(mcp * 100)], ['Unidades de equilibrio', fmt(Math.ceil(cf / mc), 0), 's'], ['Pesos de equilibrio', $m(cf / mcp), 's']] : null;
+  const ac = num(f.ac), pcr = num(f.pcir), inv = num(f.inv);
+  const raz = ac && pcr ? [['Liquidez corriente (AC ÷ PC)', fmt(ac / pcr, 2) + ' veces', 's'], ['Capital de trabajo (AC − PC)', $m(ac - pcr), 's'], ...(inv ? [['Prueba ácida ((AC − inventarios) ÷ PC)', fmt((ac - inv) / pcr, 2) + ' veces']] : [])] : null;
+  return (<div className="space-y-3">
+    <H>Punto de equilibrio</H>
+    <F label="Costos fijos del periodo" v={f.cf} set={set('cf')} prefix="$" />
+    <Grid2><F label="Precio unitario" v={f.p} set={set('p')} prefix="$" /><F label="Costo variable unitario" v={f.cv} set={set('cv')} prefix="$" /></Grid2>
+    {p > 0 && mc <= 0 && <Note tone="rose">El precio debe ser mayor al costo variable.</Note>}
+    {rows && <Res title="Punto de equilibrio" rows={rows} toast={toast} />}
+    <H>Razones de liquidez</H>
+    <Grid2><F label="Activo circulante" v={f.ac} set={set('ac')} prefix="$" /><F label="Pasivo circulante" v={f.pcir} set={set('pcir')} prefix="$" /></Grid2>
+    <F label="Inventarios (opcional)" v={f.inv} set={set('inv')} prefix="$" />
+    {raz && <Res title="Liquidez y capital de trabajo" rows={raz} toast={toast} />}
+  </div>);
+}
+
+/* ---------- 14. Crédito, VPN/TIR y conversor ---------- */
+function CalcFinanzas({ ctx, toast }) {
+  const { ind } = ctx;
+  const [tab, setTab] = useState('cred');
+  const [c, setC] = useForm({ monto: '', tasa: '', plazo: '', iva: false });
+  const [p, setP] = useForm({ inv: '', r: '10', f1: '', f2: '', f3: '', f4: '', f5: '' });
+  const [v, setV] = useForm({ cant: '1', u: 'umaD' });
+  const [all, setAll] = useState(false);
+  let credit = null;
+  if (num(c.monto) > 0 && num(c.plazo) > 0) {
+    const P = num(c.monto), n = Math.floor(num(c.plazo)), i = num(c.tasa) / 100 / 12;
+    const pmt = i ? P * i / (1 - Math.pow(1 + i, -n)) : P / n; let s = P; const tab_ = [];
+    for (let k = 1; k <= n; k++) { const int = s * i, cap = pmt - int; s = Math.max(0, s - cap); tab_.push([k, pmt, int, cap, s]); }
+    credit = { pmt, n, tab: tab_, tInt: pmt * n - P };
+  }
+  const flows = [-num(p.inv), ...[p.f1, p.f2, p.f3, p.f4, p.f5].map(num)], last = flows.map((x, i) => (i > 0 && x !== 0 ? i : 0)).reduce((a, b) => Math.max(a, b), 0);
+  const fl = flows.slice(0, last + 1), r = num(p.r) / 100;
+  const vpn = fl.reduce((t, x, i) => t + x / Math.pow(1 + r, i), 0), tir = irr(fl);
+  let acum = fl[0], pb = null; for (let i = 1; i < fl.length; i++) { if (acum + fl[i] >= 0 && pb === null) pb = (i - 1) + (-acum / fl[i]); acum += fl[i]; }
+  const U = { mxn: ['Pesos MXN', 1], umaD: ['UMA diaria', ind.umaD], umaM: ['UMA mensual', ind.umaM], umaA: ['UMA anual', ind.umaA], umi: ['UMI', ind.umi], udi: ['UDI', ind.udi], smg: ['SMG', ind.smg], zlfn: ['SMG ZLFN', ind.zlfn], usd: ['USD', ind.usd], eur: ['EUR', ind.eur] };
+  const mxn = num(v.cant) * U[v.u][1];
+  const Tab = ({ id, l }) => <button onClick={() => setTab(id)} className={`flex-1 min-h-[44px] rounded-lg text-[13px] font-semibold ${tab === id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}>{l}</button>;
+  return (<div className="space-y-3">
+    <div className="flex gap-2"><Tab id="cred" l="Crédito" /><Tab id="vpn" l="VPN / TIR" /><Tab id="conv" l="Conversor" /></div>
+    {tab === 'cred' && (<>
+      <F label="Monto del crédito" v={c.monto} set={setC('monto')} prefix="$" />
+      <Grid2><F label="Tasa anual" v={c.tasa} set={setC('tasa')} suffix="%" hint={`TIIE 28d vigente: ${pc(ind.tiie, 4)}`} /><F label="Plazo (meses)" v={c.plazo} set={setC('plazo')} /></Grid2>
+      {credit ? (<>
+        <Res title="Crédito — mensualidad fija" rows={[['Mensualidad', $m(credit.pmt), 's'], ['Total a pagar', $m(credit.pmt * credit.n)], ['Total de intereses', $m(credit.tInt)], ['Costo financiero', pc(credit.tInt / num(c.monto) * 100)]]} toast={toast} />
+        <div className="rounded-xl border border-slate-200 bg-white overflow-x-auto"><table className="t w-full text-right"><thead className="bg-slate-100 text-slate-600"><tr><th>#</th><th>Pago</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead>
+          <tbody>{credit.tab.slice(0, all ? 600 : 12).map((x) => <tr key={x[0]} className="border-t border-slate-100"><td>{x[0]}</td>{x.slice(1).map((y, j) => <td key={j}>{fmt(y)}</td>)}</tr>)}</tbody></table></div>
+        {credit.tab.length > 12 && <Btn kind="ghost" className="w-full" onClick={() => setAll(!all)}>{all ? 'Ver menos' : `Ver los ${credit.tab.length} pagos`}</Btn>}
+      </>) : <Note>Captura monto y plazo.</Note>}
+    </>)}
+    {tab === 'vpn' && (<>
+      <Grid2><F label="Inversión inicial" v={p.inv} set={setP('inv')} prefix="$" /><F label="Tasa de descuento" v={p.r} set={setP('r')} suffix="%" /></Grid2>
+      <Grid2><F label="Flujo año 1" v={p.f1} set={setP('f1')} prefix="$" /><F label="Flujo año 2" v={p.f2} set={setP('f2')} prefix="$" /></Grid2>
+      <Grid2><F label="Flujo año 3" v={p.f3} set={setP('f3')} prefix="$" /><F label="Flujo año 4 (opcional)" v={p.f4} set={setP('f4')} prefix="$" /></Grid2>
+      <F label="Flujo año 5 (opcional)" v={p.f5} set={setP('f5')} prefix="$" />
+      {num(p.inv) > 0 && last > 0 ? <Res title="Evaluación de proyecto" rows={[['VPN', $m(vpn), 's'], ['TIR', isNaN(tir) ? 'No definida' : pc(tir * 100), 's'], ['Recuperación de la inversión', pb === null ? 'No se recupera' : fmt(pb, 2) + ' años'], ['Decisión', vpn > 0 ? 'VPN positivo: conviene' : 'VPN negativo: no conviene']]} toast={toast} /> : <Note>Captura inversión y al menos un flujo.</Note>}
+    </>)}
+    {tab === 'conv' && (<>
+      <Grid2><F label="Cantidad" v={v.cant} set={setV('cant')} /><S label="Unidad origen" v={v.u} set={setV('u')} options={Object.entries(U).map(([k, x]) => [k, x[0]])} /></Grid2>
+      <Res title="Conversión de unidades" rows={Object.entries(U).filter(([k]) => k !== v.u).map(([k, x]) => [x[0], fmt(mxn / x[1], k === 'mxn' ? 2 : 4)])} toast={toast} />
+    </>)}
+  </div>);
+}
+
+/* =====================================================================
+   8. REGISTRO DE CALCULADORAS
+   Para agregar una calculadora nueva: crea el componente arriba (recibe {ctx, toast})
+   y añade un objeto al arreglo CALCULATORS_REGISTRY con su categoría.
+   ===================================================================== */
+const CALC_CATS = ['Laboral e IMSS', 'Fiscal', 'Contable y Financiera'];
+const CALCULATORS_REGISTRY = [
+  // ---- Laboral e IMSS ----
+  { id: 'sbc', cat: 'Laboral e IMSS', n: 'Salario Base de Cotización (SBC)', d: 'Fijo, variable y mixto · Art. 27 y 30 LSS', icon: 'Wallet', kw: 'sbc imss integrado factor vacaciones dignas vales bono', C: CalcSBC },
+  { id: 'nomina', cat: 'Laboral e IMSS', n: 'Simulador de Sueldo Neto', d: 'ISR, subsidio, IMSS, Infonavit, Fonacot, pensión', icon: 'Receipt', kw: 'nomina neto isr subsidio infonavit fonacot pension recibo', C: CalcNomina },
+  { id: 'costo', cat: 'Laboral e IMSS', n: 'Costo Total por Trabajador', d: 'Carga patronal, ISN y provisiones', icon: 'Users', kw: 'costo carga patronal cuotas isn aguinaldo', C: CalcCosto },
+  { id: 'liq', cat: 'Laboral e IMSS', n: 'Liquidación e Indemnización', d: 'Despido injustificado + ISR por separación', icon: 'UserMinus', kw: 'liquidacion finiquito indemnizacion despido prima antiguedad', C: CalcLiquidacion },
+  { id: 'extras', cat: 'Laboral e IMSS', n: 'Horas Extra y Días Festivos', d: 'Dobles, triples, exento y gravado', icon: 'Clock', kw: 'horas extra tiempo extraordinario festivo descanso', C: CalcExtras },
+  { id: 'prima', cat: 'Laboral e IMSS', n: 'Prima de Riesgo de Trabajo', d: 'Art. 72 LSS · nueva prima de marzo', icon: 'ShieldAlert', kw: 'prima riesgo trabajo siniestralidad imss', C: CalcPrima },
+  { id: 'mod40', cat: 'Laboral e IMSS', n: 'Modalidad 40 IMSS', d: 'Continuación voluntaria · 1 a 25 UMA', icon: 'HeartHandshake', kw: 'modalidad 40 pension continuacion voluntaria', C: CalcMod40 },
+  // ---- Fiscal ----
+  { id: 'recargos', cat: 'Fiscal', n: 'Actualización y Recargos', d: 'Art. 17-A y 21 CFF', icon: 'TrendingUp', kw: 'actualizacion recargos cff inpc mora', C: CalcRecargos },
+  { id: 'prov', cat: 'Fiscal', n: 'Pagos Provisionales ISR (PM)', d: 'Título II · coeficiente de utilidad', icon: 'Landmark', kw: 'pago provisional isr persona moral coeficiente', C: CalcProvisional },
+  { id: 'iva', cat: 'Fiscal', n: 'IVA y Retenciones Express', d: '16%, 8% frontera, RESICO, honorarios', icon: 'Percent', kw: 'iva retencion resico honorarios arrendamiento', C: CalcIVA },
+  { id: 'deduc', cat: 'Fiscal', n: 'Validador de Deducibilidad', d: 'Autos y viáticos · Art. 28 y 36 LISR', icon: 'CarFront', kw: 'deducibilidad automoviles viaticos hospedaje alimentacion', C: CalcDeduc },
+  // ---- Contable y Financiera ----
+  { id: 'depre', cat: 'Contable y Financiera', n: 'Depreciación Fiscal Actualizada', d: 'Art. 31 LISR · deducción lineal', icon: 'Building2', kw: 'depreciacion activo fijo moi inpc deduccion', C: CalcDepre },
+  { id: 'equil', cat: 'Contable y Financiera', n: 'Punto de Equilibrio y Razones', d: 'Equilibrio, liquidez y capital de trabajo', icon: 'Scale', kw: 'punto equilibrio liquidez capital trabajo margen contribucion', C: CalcEquilibrio },
+  { id: 'fin', cat: 'Contable y Financiera', n: 'Crédito, VPN/TIR y Conversor', d: 'Amortización, proyectos, UMA/UMI/UDI', icon: 'Calculator', kw: 'credito amortizacion vpn tir proyecto conversor uma udi', C: CalcFinanzas },
+  // --- AGREGAR NUEVA CALCULADORA AQUÍ ---
+];
+
+/* =====================================================================
+   9. SERVICIOS: Banxico (SIE) y noticias RSS
+   ===================================================================== */
+const BX_URL = 'https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718,SF43783,SP68257,SP1/datos/oportuno';
+const BX_MAP = { SF43718: 'usd', SF43783: 'tiie', SP68257: 'udi', SP1: 'inpc' };
+async function fetchBanxico(token) {
+  const attempts = [
+    ['directo', () => fetch(BX_URL, { headers: { 'Bmx-Token': token, Accept: 'application/json' } })],
+    ['proxy corsproxy', () => fetch('https://corsproxy.io/?url=' + encodeURIComponent(BX_URL + '?token=' + token))],
+    ['proxy allorigins', () => fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(BX_URL + '?token=' + token))],
+  ];
+  let lastErr = 'sin respuesta';
+  for (const [name, fn] of attempts) {
+    try {
+      const r = await fn(); if (!r.ok) { lastErr = `${name}: HTTP ${r.status}`; continue; }
+      const j = await r.json(); if (j && j.bmx && j.bmx.series) return { json: j, via: name };
+      lastErr = `${name}: respuesta inesperada`;
+    } catch (e) { lastErr = `${name}: ${e.message || 'error de red'}`; }
+  }
+  throw new Error(lastErr);
+}
+function parseBanxico(j) {
+  const out = {};
+  for (const s of j.bmx.series) {
+    const k = BX_MAP[s.idSerie]; const d = s.datos && s.datos[s.datos.length - 1]; if (!k || !d) continue;
+    const val = parseFloat(String(d.dato).replace(/,/g, '')); if (isNaN(val)) continue;
+    out[k] = { val, fecha: d.fecha };
+  }
+  return out;
+}
+async function fetchFeed(feed) {
+  const r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url));
+  const j = await r.json(); if (j.status !== 'ok') throw new Error(j.message || 'feed no disponible');
+  return (j.items || []).slice(0, 25).map((it) => {
+    let title = stripHtml(it.title), source = feed.name.replace(/^Google News · /, '');
+    if (feed.url.indexOf('news.google.com') > -1) { const m = title.match(/^(.*) - ([^-]+)$/); if (m) { title = m[1]; source = m[2]; } }
+    const date = new Date((it.pubDate || '').replace(' ', 'T') + 'Z');
+    return { id: hashStr(it.link || it.guid || title), title, link: it.link, source, cat: feed.cat, date: isNaN(date) ? new Date().toISOString() : date.toISOString(), desc: stripHtml(it.description || it.content || '').slice(0, 260), thumb: it.thumbnail || '' };
+  });
+}
+
+/* =====================================================================
+   10. AGENDA — obligaciones recurrentes precargadas
+   ===================================================================== */
+const AG_CATS = ['Fiscal', 'IMSS/Infonavit', 'Laboral/Corporativo'];
+const OBLIG = [
+  { id: 'isr-iva', cat: 'Fiscal', n: 'Declaración mensual ISR / IVA / retenciones', r: { t: 'm', day: 17 } },
+  { id: 'diot', cat: 'Fiscal', n: 'DIOT (operaciones con terceros)', r: { t: 'm', day: 17 } },
+  { id: 'resico', cat: 'Fiscal', n: 'Pago mensual RESICO personas físicas', r: { t: 'm', day: 17 } },
+  { id: 'conta', cat: 'Fiscal', n: 'Contabilidad electrónica — balanza mensual (PM)', r: { t: 'm2', day: 3 } },
+  { id: 'anual-pm', cat: 'Fiscal', n: 'Declaración anual Personas Morales', r: { t: 'y', month: 3, day: 31 } },
+  { id: 'anual-pf', cat: 'Fiscal', n: 'Declaración anual Personas Físicas', r: { t: 'y', month: 4, day: 30 } },
+  { id: 'imss', cat: 'IMSS/Infonavit', n: 'Pago mensual de cuotas IMSS (SUA/SIPARE)', r: { t: 'm', day: 17 } },
+  { id: 'rcv', cat: 'IMSS/Infonavit', n: 'Pago bimestral RCV e Infonavit', r: { t: 'list', months: [1, 3, 5, 7, 9, 11], day: 17 } },
+  { id: 'prima', cat: 'IMSS/Infonavit', n: 'Determinación de prima de riesgo de trabajo', r: { t: 'y', month: 2, day: 28 } },
+  { id: 'icsoe', cat: 'IMSS/Infonavit', n: 'ICSOE / SISUB (servicios especializados)', r: { t: 'list', months: [1, 5, 9], day: 17 } },
+  { id: 'constancias', cat: 'Laboral/Corporativo', n: 'Constancias de sueldos y retenciones a trabajadores', r: { t: 'y', month: 2, day: 15 } },
+  { id: 'ptu-pm', cat: 'Laboral/Corporativo', n: 'Pago de PTU — Personas Morales', r: { t: 'y', month: 5, day: 30 } },
+  { id: 'ptu-pf', cat: 'Laboral/Corporativo', n: 'Pago de PTU — Personas Físicas', r: { t: 'y', month: 6, day: 29 } },
+  { id: 'aguinaldo', cat: 'Laboral/Corporativo', n: 'Pago de aguinaldo (a más tardar)', r: { t: 'y', month: 12, day: 20 } },
+  { id: 'uma', cat: 'Laboral/Corporativo', n: 'Actualizar UMA, SMG, tablas ISR y topes en la app', r: { t: 'y', month: 2, day: 1 } },
+];
+function genOcurrencias(base = new Date()) {
+  const out = [], y0 = base.getFullYear();
+  const adj = (d) => { const w = d.getDay(); if (w === 6) d.setDate(d.getDate() + 2); else if (w === 0) d.setDate(d.getDate() + 1); return d; };
+  for (let y = y0 - 1; y <= y0 + 1; y++) for (const o of OBLIG) {
+    const push = (mo, day) => { const dt = adj(new Date(y, mo - 1, day)); out.push({ key: o.id + '|' + localISO(dt), id: o.id, cat: o.cat, n: o.n, date: localISO(dt) }); };
+    if (o.r.t === 'm') for (let m = 1; m <= 12; m++) push(m, o.r.day);
+    else if (o.r.t === 'm2') for (let m = 1; m <= 12; m++) push(m, o.r.day);
+    else if (o.r.t === 'list') o.r.months.forEach((m) => push(m, o.r.day));
+    else push(o.r.month, o.r.day);
+  }
+  return out;
+}
+const diasHasta = (iso) => Math.round((new Date(iso + 'T00:00:00') - new Date(localISO() + 'T00:00:00')) / 864e5);
+
+/* =====================================================================
+   11. PANTALLAS
+   ===================================================================== */
+function Sheet({ title, onClose, children }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end bg-black/50" onClick={onClose}>
+      <div className="w-full bg-white rounded-t-3xl p-5 safe-bottom max-h-[88%] overflow-y-auto fadein" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-3"><h3 className="font-bold text-lg">{title}</h3><button onClick={onClose} className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center"><Icon name="X" size={20} /></button></div>
+        {children}
+      </div>
+    </div>
+  );
+}
+function NumCell({ v, onCommit, w = '' }) {
+  return <input key={v} defaultValue={v} inputMode="decimal" className={`h-10 px-2 rounded-lg border border-slate-300 text-sm bg-white ${w}`} onBlur={(e) => onCommit(num(e.target.value))} />;
+}
+
+/* ---------- NOTICIAS ---------- */
+function Cintillo({ data, onEdit, onSync, syncing }) {
+  const dot = (k) => { const m = data.indMeta[k]; return m ? (m.src === 'banxico' ? 'bg-emerald-400' : 'bg-amber-400') : 'bg-slate-500'; };
+  return (
+    <div className="bg-slate-900 text-white rounded-2xl p-3">
+      <div className="flex items-center justify-between mb-2">
+        <div><div className="text-sm font-semibold">Indicadores clave</div><div className="text-[11px] text-slate-400">{data.lastSync ? 'Banxico: ' + fmtDT(data.lastSync) : 'Valores de referencia · toca uno para editar'}</div></div>
+        <button onClick={onSync} disabled={syncing} className="min-h-[44px] px-3 rounded-xl bg-sky-600 text-sm font-semibold flex items-center gap-2 disabled:opacity-60"><Icon name="RefreshCw" size={16} className={syncing ? 'animate-spin' : ''} />{syncing ? 'Sincronizando' : 'Sync Banxico'}</button>
+      </div>
+      <div className="flex gap-2 overflow-x-auto noscroll -mx-1 px-1 pb-1">
+        {IND_DEFS.map((d) => (
+          <button key={d.k} onClick={() => onEdit(d.k)} className="shrink-0 min-w-[104px] text-left rounded-xl bg-slate-800 active:bg-slate-700 px-3 py-2">
+            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 uppercase tracking-wide"><span className={`w-1.5 h-1.5 rounded-full ${dot(d.k)}`} />{d.l}</div>
+            <div className="text-[17px] font-bold tabular-nums">{d.pre || ''}{fmt(data.ind[d.k], d.d)}<span className="text-[10px] text-slate-400 font-normal ml-0.5">{d.suf || ''}</span></div>
+          </button>))}
+      </div>
+    </div>
+  );
+}
+function NewsView({ data, patch, news, loadingNews, refresh, toast, online, onSync, syncing, editInd }) {
+  const [cat, setCat] = useState('all'), [q, setQ] = useState('');
+  const favIds = useMemo(() => new Set(data.favoritos.map((x) => x.id)), [data.favoritos]);
+  const list = useMemo(() => news.filter((n) => (cat === 'all' || n.cat === cat) && (!q || (n.title + ' ' + n.source + ' ' + n.desc).toLowerCase().includes(q.toLowerCase()))), [news, cat, q]);
+  const toggleFav = (n) => patch((d) => ({ favoritos: d.favoritos.some((x) => x.id === n.id) ? d.favoritos.filter((x) => x.id !== n.id) : [{ ...n, savedAt: new Date().toISOString() }, ...d.favoritos] }));
+  return (
+    <div className="space-y-3">
+      <Cintillo data={data} onEdit={editInd} onSync={onSync} syncing={syncing} />
+      {!online && <Note tone="amber">Sin conexión: mostrando las noticias guardadas en tu dispositivo.</Note>}
+      <div className="flex gap-2">
+        <div className="relative flex-1"><Icon name="Search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input className={inputCls} style={{ paddingLeft: 38 }} placeholder="Buscar: IMSS, SAT, UMA…" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+        <button onClick={() => refresh(true)} disabled={loadingNews || !online} className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center disabled:opacity-40" aria-label="Actualizar"><Icon name="RefreshCw" size={18} className={loadingNews ? 'animate-spin' : ''} /></button>
+      </div>
+      <div className="flex gap-2 overflow-x-auto noscroll pb-1">
+        {NEWS_CATS.map(([k, l]) => <button key={k} onClick={() => setCat(k)} className={`shrink-0 min-h-[40px] px-4 rounded-full text-[13px] font-semibold ${cat === k ? 'bg-sky-600 text-white' : 'bg-white border border-slate-200 text-slate-600'}`}>{l}</button>)}
+      </div>
+      {data.lastNewsFetch && <div className="text-[11px] text-slate-500">Actualizado {timeAgo(data.lastNewsFetch)} · {list.length} notas</div>}
+      {list.length === 0 && <Card className="text-center text-slate-500 text-sm py-8">{loadingNews ? 'Cargando noticias…' : news.length ? 'Sin resultados para tu búsqueda.' : 'Aún no hay noticias. Conéctate y toca actualizar.'}</Card>}
+      {list.slice(0, 120).map((n) => (
+        <Card key={n.id} className="fadein">
+          <div className="flex items-center gap-2 text-[11px] mb-1"><span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-semibold">{CAT_LABEL[n.cat]}</span><span className="text-slate-500 truncate">{n.source} · {timeAgo(n.date)}</span></div>
+          <a href={n.link} target="_blank" rel="noopener" className="font-semibold text-[15px] leading-snug text-slate-900 clamp3 block">{n.title}</a>
+          {n.desc && n.desc !== n.title && <p className="text-[13px] text-slate-500 mt-1 clamp2">{n.desc}</p>}
+          <div className="flex gap-2 mt-3">
+            <a href={n.link} target="_blank" rel="noopener" className="flex-1 min-h-[44px] rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold flex items-center justify-center gap-2"><Icon name="ExternalLink" size={16} />Leer</a>
+            <button onClick={() => { toggleFav(n); toast(favIds.has(n.id) ? 'Quitada de Guardadas' : 'Guardada para leer sin internet'); }} className={`w-12 min-h-[44px] rounded-xl flex items-center justify-center ${favIds.has(n.id) ? 'bg-amber-400 text-slate-900' : 'bg-slate-100 text-slate-700'}`} aria-label="Guardar"><Icon name="Star" size={18} /></button>
+            <a href={waLink(`*${n.title}*\n${n.link}\n— MonitorFiscalMX`)} target="_blank" rel="noopener" className="w-12 min-h-[44px] rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center" aria-label="WhatsApp"><Icon name="Send" size={18} /></a>
+          </div>
+        </Card>))}
+    </div>
+  );
+}
+
+/* ---------- CALCULADORAS ---------- */
+function CalcView({ ctx, toast }) {
+  const [sel, setSel] = useState(null), [q, setQ] = useState('');
+  const cur = CALCULATORS_REGISTRY.find((c) => c.id === sel);
+  if (cur) {
+    const C = cur.C;
+    return (<div className="space-y-3 fadein">
+      <button onClick={() => setSel(null)} className="min-h-[44px] flex items-center gap-1 text-sky-700 font-semibold"><Icon name="ChevronLeft" size={20} />Calculadoras</button>
+      <div><h2 className="text-xl font-bold leading-tight">{cur.n}</h2><p className="text-sm text-slate-500">{cur.d}</p></div>
+      <Card><C ctx={ctx} toast={toast} /></Card>
+    </div>);
+  }
+  const ql = q.toLowerCase().trim();
+  const match = (c) => !ql || (c.n + ' ' + c.d + ' ' + c.kw + ' ' + c.cat).toLowerCase().includes(ql);
+  return (
+    <div className="space-y-4">
+      <div className="relative"><Icon name="Search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" /><input className={inputCls} style={{ paddingLeft: 38 }} placeholder="Buscar calculadora: SBC, recargos, IVA…" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      {CALC_CATS.map((cat) => {
+        const items = CALCULATORS_REGISTRY.filter((c) => c.cat === cat && match(c)); if (!items.length) return null;
+        return (<section key={cat}><h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{cat}</h2>
+          <div className="space-y-2">{items.map((c) => (
+            <button key={c.id} onClick={() => setSel(c.id)} className="w-full bg-white border border-slate-200 rounded-2xl p-3 flex items-center gap-3 text-left min-h-[64px] shadow-sm">
+              <span className="w-11 h-11 rounded-xl bg-slate-900 text-sky-300 flex items-center justify-center shrink-0"><Icon name={c.icon} size={22} /></span>
+              <span className="flex-1 min-w-0"><span className="block font-semibold text-[15px] leading-tight">{c.n}</span><span className="block text-xs text-slate-500">{c.d}</span></span>
+              <Icon name="ChevronRight" size={18} className="text-slate-400" />
+            </button>))}</div></section>);
+      })}
+      {!CALCULATORS_REGISTRY.some(match) && <Card className="text-center text-sm text-slate-500">Sin resultados.</Card>}
+    </div>
+  );
+}
+
+/* ---------- AGENDA ---------- */
+function AgendaView({ data, patch, toast }) {
+  const [filtro, setFiltro] = useState('Todas'), [form, setForm] = useState(false);
+  const [r, setR] = useState({ t: '', fecha: localISO(), cat: 'Fiscal', nota: '' });
+  const items = useMemo(() => {
+    const base = genOcurrencias().filter((o) => { const d = diasHasta(o.date); return d >= -20 && d <= 75; });
+    const custom = data.recordatorios.map((x) => ({ key: 'c|' + x.id, custom: true, id: x.id, cat: x.cat, n: x.t, nota: x.nota, date: x.fecha }));
+    return [...base, ...custom].sort((a, b) => a.date.localeCompare(b.date));
+  }, [data.recordatorios]);
+  const estado = (it) => { if (data.agendaEstado[it.key] === 'done') return 'Presentada'; return diasHasta(it.date) <= 7 ? 'Próxima' : 'Pendiente'; };
+  const toggle = (it) => patch((d) => { const e = { ...d.agendaEstado }; if (e[it.key] === 'done') delete e[it.key]; else e[it.key] = 'done'; return { agendaEstado: e }; });
+  const vis = items.filter((i) => (filtro === 'Todas' || (filtro === 'Pendientes' ? estado(i) !== 'Presentada' : i.cat === filtro)));
+  const exportWA = async () => {
+    const pend = items.filter((i) => estado(i) !== 'Presentada' && diasHasta(i.date) <= 45);
+    const t = '*Pendientes fiscales y de seguridad social*\n' + pend.map((i) => { const d = diasHasta(i.date); return `• ${new Date(i.date + 'T00:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} — ${i.n} (${d < 0 ? 'VENCIDA' : d === 0 ? 'HOY' : 'en ' + d + ' d'})`; }).join('\n') + '\n\n— MonitorFiscalMX';
+    if (await copyText(t)) toast('Pendientes copiados'); window.open(waLink(t), '_blank');
+  };
+  const tone = { Presentada: 'bg-emerald-100 text-emerald-700', 'Próxima': 'bg-amber-100 text-amber-800', Pendiente: 'bg-slate-100 text-slate-600' };
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-2 overflow-x-auto noscroll pb-1">{['Todas', 'Pendientes', ...AG_CATS].map((c) => <button key={c} onClick={() => setFiltro(c)} className={`shrink-0 min-h-[40px] px-4 rounded-full text-[13px] font-semibold ${filtro === c ? 'bg-sky-600 text-white' : 'bg-white border border-slate-200 text-slate-600'}`}>{c}</button>)}</div>
+      <div className="flex gap-2"><Btn kind="dark" icon="Plus" className="flex-1" onClick={() => setForm(true)}>Recordatorio</Btn><Btn kind="green" icon="Send" className="flex-1" onClick={exportWA}>Pendientes a WhatsApp</Btn></div>
+      {vis.map((it) => { const e = estado(it), d = diasHasta(it.date), venc = d < 0 && e !== 'Presentada'; return (
+        <Card key={it.key} className="!p-3 flex gap-3 items-start">
+          <button onClick={() => toggle(it)} className={`w-11 h-11 rounded-xl shrink-0 flex items-center justify-center ${e === 'Presentada' ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'}`} aria-label="Marcar presentada"><Icon name="Check" size={22} /></button>
+          <div className="flex-1 min-w-0">
+            <div className={`font-semibold text-[15px] leading-snug ${e === 'Presentada' ? 'line-through text-slate-400' : ''}`}>{it.n}</div>
+            {it.nota && <div className="text-xs text-slate-500">{it.nota}</div>}
+            <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[11px]">
+              <span className="font-semibold text-slate-700">{new Date(it.date + 'T00:00:00').toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+              <span className={`px-2 py-0.5 rounded-full font-semibold ${venc ? 'bg-rose-100 text-rose-700' : tone[e]}`}>{venc ? 'Vencida · Pendiente' : e}</span>
+              <span className="text-slate-500">{it.cat}{d >= 0 && e !== 'Presentada' ? ` · ${d === 0 ? 'hoy' : 'en ' + d + ' d'}` : ''}</span>
+            </div>
+          </div>
+          {it.custom && <button onClick={() => patch((x) => ({ recordatorios: x.recordatorios.filter((z) => z.id !== it.id) }))} className="w-9 h-9 text-rose-500"><Icon name="Trash2" size={18} /></button>}
+        </Card>); })}
+      {!vis.length && <Card className="text-center text-sm text-slate-500">Nada por mostrar.</Card>}
+      <Note>Fechas ajustadas al siguiente día hábil (lunes si cae en fin de semana). No considera días inhábiles oficiales ni el 6° dígito del RFC; confirma plazos en el SAT/IMSS.</Note>
+      {form && <Sheet title="Nuevo recordatorio" onClose={() => setForm(false)}>
+        <div className="space-y-3">
+          <F label="Título" type="text" ph="Ej. Presentar DIOT cliente X" v={r.t} set={(v) => setR({ ...r, t: v })} />
+          <Grid2><F label="Fecha" type="date" v={r.fecha} set={(v) => setR({ ...r, fecha: v })} /><S label="Categoría" v={r.cat} set={(v) => setR({ ...r, cat: v })} options={AG_CATS.map((c) => [c, c])} /></Grid2>
+          <F label="Nota (opcional)" type="text" ph="" v={r.nota} set={(v) => setR({ ...r, nota: v })} />
+          <Btn className="w-full" onClick={() => { if (!r.t.trim()) return toast('Escribe un título'); patch((d) => ({ recordatorios: [...d.recordatorios, { id: uid(), ...r }] })); setForm(false); setR({ t: '', fecha: localISO(), cat: 'Fiscal', nota: '' }); toast('Recordatorio agregado'); }}>Guardar</Btn>
+        </div></Sheet>}
+    </div>
+  );
+}
+
+/* ---------- GUARDADAS ---------- */
+function SavedView({ data, patch, toast }) {
+  const [open, setOpen] = useState(null);
+  const addNote = () => { const id = 'nota-' + uid(); patch((d) => ({ favoritos: [{ id, title: 'Nota nueva', custom: true, cat: 'nota', source: 'Nota propia', date: new Date().toISOString(), savedAt: new Date().toISOString() }, ...d.favoritos] })); setOpen(id); };
+  const setNote = (id, v) => patch((d) => ({ notas: { ...d.notas, [id]: v } }));
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between"><div><h2 className="font-bold text-lg">Biblioteca guardada</h2><p className="text-xs text-slate-500">Disponible sin internet · {data.favoritos.length} elementos</p></div><Btn kind="dark" icon="NotebookPen" onClick={addNote}>Nota</Btn></div>
+      {!data.favoritos.length && <Card className="text-center text-sm text-slate-500 py-8">Guarda noticias con la ⭐ en Noticias, o crea una nota propia.</Card>}
+      {data.favoritos.map((n) => { const isOpen = open === n.id, nt = data.notas[n.id] || ''; return (
+        <Card key={n.id} className="!p-3">
+          <div className="flex items-start gap-2">
+            <div className="flex-1 min-w-0" onClick={() => setOpen(isOpen ? null : n.id)}>
+              <div className="text-[11px] text-slate-500 mb-0.5">{n.custom ? 'Nota propia' : `${CAT_LABEL[n.cat] || ''} · ${n.source}`} · {timeAgo(n.savedAt || n.date)}</div>
+              {n.custom && isOpen ? <input className={inputCls} value={n.title} onClick={(e) => e.stopPropagation()} onChange={(e) => patch((d) => ({ favoritos: d.favoritos.map((x) => (x.id === n.id ? { ...x, title: e.target.value } : x)) }))} /> : <div className="font-semibold text-[15px] leading-snug">{n.title}</div>}
+              {nt && !isOpen && <div className="text-xs text-sky-700 mt-1 clamp2">📝 {nt}</div>}
+            </div>
+            <button onClick={() => setOpen(isOpen ? null : n.id)} className="w-10 h-10 text-slate-500"><Icon name={isOpen ? 'ChevronUp' : 'ChevronDown'} size={20} /></button>
+          </div>
+          {isOpen && <div className="mt-2 space-y-2 fadein">
+            {n.desc && <p className="text-[13px] text-slate-600">{n.desc}</p>}
+            <textarea className="w-full min-h-[140px] p-3 rounded-xl border border-slate-300 text-[15px] focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Escribe tu nota técnica: criterio, fundamento legal, aplicación al cliente…" value={nt} onChange={(e) => setNote(n.id, e.target.value)} />
+            <div className="flex gap-2">
+              {n.link && <a href={n.link} target="_blank" rel="noopener" className="flex-1 min-h-[44px] rounded-xl bg-slate-100 text-sm font-semibold flex items-center justify-center gap-2"><Icon name="ExternalLink" size={16} />Abrir</a>}
+              <a href={waLink(`*${n.title}*\n${n.link || ''}\n\n${nt}`)} target="_blank" rel="noopener" className="flex-1 min-h-[44px] rounded-xl bg-emerald-100 text-emerald-700 text-sm font-semibold flex items-center justify-center gap-2"><Icon name="Send" size={16} />WhatsApp</a>
+              <button onClick={() => { if (confirm('¿Quitar de Guardadas junto con su nota?')) { patch((d) => { const nn = { ...d.notas }; delete nn[n.id]; return { favoritos: d.favoritos.filter((x) => x.id !== n.id), notas: nn }; }); toast('Eliminada'); } }} className="w-12 min-h-[44px] rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center"><Icon name="Trash2" size={18} /></button>
+            </div></div>}
+        </Card>); })}
+    </div>
+  );
+}
+
+/* ---------- AJUSTES ---------- */
+function SettingsView({ data, patch, setData, toast, onSync, syncing, doBackup, mirrors, reloadMirrors }) {
+  const T = data.T, setT = (p) => patch((d) => ({ T: { ...d.T, ...p } }));
+  const [show, setShow] = useState(false), [nf, setNf] = useState({ name: '', url: '', cat: 'fiscal' });
+  const fileRef = useRef();
+  const restore = (payload, label) => {
+    if (!confirm(`¿Restaurar ${label}? Reemplazará los datos actuales de este dispositivo.`)) return;
+    setData(mergeData(DEFAULT_DATA, payload)); toast('Datos restaurados');
+  };
+  const onFile = async (e) => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+    try { const j = JSON.parse(await f.text()); if (j.app !== 'MonitorFiscalMX' || !j.data) throw new Error(); restore(j.data, `el respaldo del ${fmtDT(j.exportedAt)}`); } catch (er) { toast('Archivo inválido: no es un respaldo de MonitorFiscalMX'); }
+  };
+  const setInd = (k, v) => patch((d) => ({ ind: { ...d.ind, [k]: v }, indMeta: { ...d.indMeta, [k]: { src: 'manual', at: new Date().toISOString() } } }));
+  const Sec = ({ icon, title, children }) => <Card><h3 className="font-bold flex items-center gap-2 mb-3"><Icon name={icon} size={18} className="text-sky-600" />{title}</h3><div className="space-y-3">{children}</div></Card>;
+  return (
+    <div className="space-y-3">
+      <Sec icon="KeyRound" title="API Banxico (SIE)">
+        <label className="block"><span className="block text-[13px] font-medium text-slate-600 mb-1">Token gratuito Bmx-Token</span>
+          <div className="flex gap-2"><input className={inputCls} type={show ? 'text' : 'password'} value={data.token} placeholder="Pega tu token" onChange={(e) => patch({ token: e.target.value.trim() })} autoCapitalize="off" autoCorrect="off" />
+            <button onClick={() => setShow(!show)} className="w-12 shrink-0 rounded-xl bg-slate-100 flex items-center justify-center"><Icon name={show ? 'EyeOff' : 'Eye'} size={18} /></button></div></label>
+        <Btn icon="RefreshCw" className="w-full" onClick={onSync} disabled={syncing}>{syncing ? 'Sincronizando…' : 'Sincronizar Banxico Ahora'}</Btn>
+        <div className="text-xs text-slate-500">Última sincronización: <b>{fmtDT(data.lastSync)}</b>{data.syncMsg ? <><br />{data.syncMsg}</> : null}</div>
+        <Note>Solicita tu token gratis en banxico.org.mx/SieAPIRest (“Solicitud de token”). Si el navegador bloquea la consulta directa, se reintenta con un proxy CORS público (el token viaja en la URL a ese proxy). Actualiza USD/MXN FIX, TIIE 28d, UDI e INPC.</Note>
+      </Sec>
+
+      <Sec icon="Gauge" title="Indicadores (editables)">
+        <div className="grid grid-cols-2 gap-3">
+          {IND_DEFS.map((d) => { const m = data.indMeta[d.k]; return (
+            <label key={d.k} className="block"><span className="block text-[12px] font-medium text-slate-600 mb-1">{d.l} <span className={m ? (m.src === 'banxico' ? 'text-emerald-600' : 'text-amber-600') : 'text-slate-400'}>●</span></span>
+              <NumCell v={data.ind[d.k]} w="w-full" onCommit={(v) => {
+                if (d.k === 'umaD') patch((x) => ({ ind: { ...x.ind, umaD: v, umaM: Math.round(v * DIAS_MES * 100) / 100, umaA: Math.round(v * DIAS_MES * 12 * 100) / 100, umi: v }, indMeta: { ...x.indMeta, umaD: { src: 'manual', at: new Date().toISOString() } } }));
+                else setInd(d.k, v);
+              }} /></label>); })}
+        </div>
+        <Note>● verde = Banxico · ● ámbar = manual · ● gris = valor de referencia. Al cambiar UMA diaria se recalculan UMA mensual (×30.4), anual (mensual×12) y UMI. Verifica los valores oficiales vigentes (DOF/INEGI/CONASAMI/Infonavit).</Note>
+      </Sec>
+
+      <Sec icon="Table2" title="Tarifas y parámetros">
+        <div className="overflow-x-auto"><table className="t w-full"><thead className="bg-slate-100 text-slate-600"><tr><th>Límite inf. mensual</th><th>Cuota fija</th><th>% excedente</th></tr></thead>
+          <tbody>{T.isr.map((r, i) => <tr key={i} className="border-t border-slate-100">{r.map((c, j) => <td key={j}><NumCell v={c} w="w-28" onCommit={(v) => setT({ isr: T.isr.map((x, ii) => (ii === i ? x.map((y, jj) => (jj === j ? v : y)) : x)) })} /></td>)}</tr>)}</tbody></table></div>
+        <Grid2>
+          <label className="block"><span className="text-[12px] text-slate-600">Subsidio empleo mensual</span><NumCell v={T.subMonto} w="w-full" onCommit={(v) => setT({ subMonto: v })} /></label>
+          <label className="block"><span className="text-[12px] text-slate-600">Límite ingreso subsidio</span><NumCell v={T.subLimite} w="w-full" onCommit={(v) => setT({ subLimite: v })} /></label>
+          <label className="block"><span className="text-[12px] text-slate-600">Prima riesgo default %</span><NumCell v={T.primaRiesgo} w="w-full" onCommit={(v) => setT({ primaRiesgo: v })} /></label>
+          <label className="block"><span className="text-[12px] text-slate-600">ISN estatal default %</span><NumCell v={T.isn} w="w-full" onCommit={(v) => setT({ isn: v })} /></label>
+          <label className="block"><span className="text-[12px] text-slate-600">Seguro vivienda Infonavit $/mes</span><NumCell v={T.seguroViv} w="w-full" onCommit={(v) => setT({ seguroViv: v })} /></label>
+        </Grid2>
+        <div><div className="text-[12px] font-semibold text-slate-600 mb-1">Cesantía y Vejez patronal {T.cyvAnio} (% por rango: SM, 1.5, 2, 2.5, 3, 3.5, 4 UMA, +4)</div>
+          <div className="grid grid-cols-4 gap-2">{T.cyv.map((c, i) => <NumCell key={i} v={c} w="w-full" onCommit={(v) => setT({ cyv: T.cyv.map((x, j) => (j === i ? v : x)) })} />)}</div></div>
+        <div><div className="text-[12px] font-semibold text-slate-600 mb-1">Topes de deducibilidad</div>
+          <Grid2>{Object.entries({ autoComb: 'Auto combustión', autoElec: 'Auto eléctrico', arrComb: 'Arrend. diario comb.', arrElec: 'Arrend. diario elec.', alimNac: 'Alimentos nac./día', alimExt: 'Alimentos ext./día', hospNac: 'Hospedaje nac./día', hospExt: 'Hospedaje ext./día' }).map(([k, l]) =>
+            <label key={k} className="block"><span className="text-[12px] text-slate-600">{l}</span><NumCell v={T.topes[k]} w="w-full" onCommit={(v) => setT({ topes: { ...T.topes, [k]: v } })} /></label>)}</Grid2></div>
+        <Btn kind="ghost" className="w-full" onClick={() => { if (confirm('¿Restablecer tarifas y parámetros a los valores de referencia?')) patch({ T: DEFAULT_T }); }}>Restablecer tarifas de referencia</Btn>
+        <Note tone="amber">Tarifas ISR, subsidio, cuotas y topes son valores de referencia 2026 incluidos en la app; es responsabilidad del usuario validarlos contra DOF, Anexo 8 RMF e IMSS.</Note>
+      </Sec>
+
+      <Sec icon="Rss" title="Fuentes de noticias (RSS)">
+        {data.feeds.map((f) => (
+          <div key={f.id} className="flex items-center gap-2">
+            <button onClick={() => patch((d) => ({ feeds: d.feeds.map((x) => (x.id === f.id ? { ...x, on: !x.on } : x)) }))} className={`w-11 h-11 rounded-xl shrink-0 flex items-center justify-center ${f.on ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-400'}`}><Icon name="Check" size={18} /></button>
+            <div className="flex-1 min-w-0"><div className="text-sm font-semibold truncate">{f.name}</div><div className="text-[11px] text-slate-500 truncate">{CAT_LABEL[f.cat]} · {f.url}</div></div>
+            <button onClick={() => patch((d) => ({ feeds: d.feeds.filter((x) => x.id !== f.id) }))} className="w-9 h-9 text-rose-500"><Icon name="Trash2" size={18} /></button>
+          </div>))}
+        <div className="rounded-xl bg-slate-50 p-3 space-y-2">
+          <F label="Nombre" type="text" ph="Mi fuente" v={nf.name} set={(v) => setNf({ ...nf, name: v })} />
+          <F label="URL del RSS" type="text" ph="https://…/rss.xml" v={nf.url} set={(v) => setNf({ ...nf, url: v })} />
+          <S label="Categoría" v={nf.cat} set={(v) => setNf({ ...nf, cat: v })} options={NEWS_CATS.slice(1)} />
+          <Btn kind="dark" icon="Plus" className="w-full" onClick={() => { if (!/^https?:\/\//.test(nf.url)) return toast('URL inválida'); patch((d) => ({ feeds: [...d.feeds, { id: uid(), name: nf.name || nf.url, url: nf.url.trim(), cat: nf.cat, on: true }] })); setNf({ name: '', url: '', cat: 'fiscal' }); toast('Fuente agregada'); }}>Agregar fuente</Btn>
+        </div>
+        <Btn kind="ghost" className="w-full" onClick={() => patch({ feeds: DEFAULT_FEEDS })}>Restaurar fuentes originales</Btn>
+      </Sec>
+
+      <Sec icon="HardDriveDownload" title="Respaldo y restauración">
+        <div className="text-xs text-slate-500">Último respaldo externo: <b>{fmtDT(data.lastExternalBackup)}</b></div>
+        <Btn kind="green" icon="Share2" className="w-full" onClick={doBackup}>Guardar respaldo en Drive</Btn>
+        <Btn kind="ghost" icon="Upload" className="w-full" onClick={() => fileRef.current.click()}>Restaurar desde archivo (.json)</Btn>
+        <input ref={fileRef} type="file" accept=".json,application/json" className="hidden" onChange={onFile} />
+        <div><div className="text-[12px] font-semibold text-slate-600 mb-1">Copia espejo interna (IndexedDB · últimos 7 días)</div>
+          {mirrors.length ? mirrors.map((b) => <div key={b.date} className="flex items-center justify-between py-1.5 border-b border-slate-100 text-sm"><span>{b.date} <span className="text-xs text-slate-400">{new Date(b.savedAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}</span></span><button className="text-sky-700 font-semibold min-h-[40px] px-2" onClick={() => restore(b.payload, 'la copia del ' + b.date)}>Restaurar</button></div>) : <div className="text-xs text-slate-400">Aún no hay copias.</div>}
+          <button onClick={reloadMirrors} className="text-xs text-slate-500 mt-1 underline">Actualizar lista</button></div>
+        <Note>El respaldo incluye tu token Banxico: guarda el archivo en un lugar privado. En el celular, “Compartir” abre el menú nativo para elegir Google Drive o WhatsApp.</Note>
+      </Sec>
+
+      <Sec icon="Info" title="Acerca de">
+        <p className="text-sm text-slate-600">MonitorFiscalMX · PWA autocontenida. Datos solo en tu dispositivo (localStorage + IndexedDB). Las calculadoras son herramientas de apoyo y no sustituyen el criterio profesional ni la normatividad vigente.</p>
+        <Btn kind="danger" icon="Trash2" className="w-full" onClick={() => { if (confirm('Esto borrará TODOS los datos locales de la app (se conservan las copias espejo). ¿Continuar?')) { setData(mergeData(DEFAULT_DATA, {})); toast('Datos reiniciados'); } }}>Borrar datos locales</Btn>
+      </Sec>
+    </div>
+  );
+}
+
+/* =====================================================================
+   12. APP
+   ===================================================================== */
+const TABS = [['news', 'Noticias', 'Newspaper'], ['calc', 'Calculadoras', 'Calculator'], ['agenda', 'Agenda', 'CalendarCheck'], ['saved', 'Guardadas', 'Bookmark'], ['set', 'Ajustes', 'Settings']];
+function useOnline() { const [o, setO] = useState(navigator.onLine); useEffect(() => { const a = () => setO(true), b = () => setO(false); window.addEventListener('online', a); window.addEventListener('offline', b); return () => { window.removeEventListener('online', a); window.removeEventListener('offline', b); }; }, []); return o; }
+
+function App() {
+  const [data, setData] = useState(loadData);
+  const [tab, setTab] = useState(() => { try { return localStorage.getItem('mfmx_tab') || 'news'; } catch (e) { return 'news'; } });
+  const [news, setNews] = useState([]), [loadingNews, setLoadingNews] = useState(false);
+  const [syncing, setSyncing] = useState(false), [msg, setMsg] = useState(''), [editK, setEditK] = useState(null), [mirrors, setMirrors] = useState([]);
+  const [calcKey, setCalcKey] = useState(0);
+  const [snooze, setSnooze] = useState(() => { try { return +localStorage.getItem('mfmx_snooze') || 0; } catch (e) { return 0; } });
+  const online = useOnline(), scrollRef = useRef(), toastT = useRef();
+  const toast = useCallback((m) => { setMsg(m); clearTimeout(toastT.current); toastT.current = setTimeout(() => setMsg(''), 2600); }, []);
+  const patch = useCallback((p) => setData((d) => ({ ...d, ...(typeof p === 'function' ? p(d) : p) })), []);
+  const ctx = useMemo(() => ({ ind: data.ind, T: data.T }), [data.ind, data.T]);
+
+  // Persistencia: localStorage inmediato + espejo diario en IndexedDB (debounce)
+  const mirrorT = useRef();
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch (e) {}
+    clearTimeout(mirrorT.current); mirrorT.current = setTimeout(() => { mirrorBackup(data).then(loadMirrors); }, 2500);
+  }, [data]);
+  const loadMirrors = useCallback(async () => setMirrors((await DB.getAll('backups')).sort((a, b) => b.date.localeCompare(a.date))), []);
+  useEffect(() => { loadMirrors(); }, []);
+  useEffect(() => { try { localStorage.setItem('mfmx_tab', tab); } catch (e) {} if (scrollRef.current) scrollRef.current.scrollTop = 0; }, [tab]);
+
+  // Noticias: cargar de IndexedDB y refrescar en vivo
+  useEffect(() => { DB.getAll('news').then((a) => setNews(a.sort((x, y) => y.date.localeCompare(x.date)))); }, []);
+  const refresh = useCallback(async (manual) => {
+    if (!navigator.onLine) { if (manual) toast('Sin conexión'); return; }
+    setLoadingNews(true);
+    const feeds = data.feeds.filter((f) => f.on);
+    const res = await Promise.allSettled(feeds.map(fetchFeed));
+    const got = res.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])), fail = res.filter((r) => r.status === 'rejected').length;
+    if (got.length) {
+      const cur = await DB.getAll('news'), map = new Map(cur.map((x) => [x.id, x])); got.forEach((x) => map.set(x.id, x));
+      const favs = new Set(data.favoritos.map((x) => x.id));
+      const all = [...map.values()].sort((a, b) => b.date.localeCompare(a.date)); const keep = all.slice(0, 400), drop = all.slice(400).filter((x) => !favs.has(x.id));
+      await DB.putMany('news', keep); for (const x of drop) await DB.del('news', x.id);
+      setNews(keep); patch({ lastNewsFetch: new Date().toISOString() });
+    }
+    setLoadingNews(false);
+    if (manual) toast(got.length ? `${got.length} noticias${fail ? ` · ${fail} fuente(s) sin respuesta` : ''}` : 'No se pudieron cargar las fuentes');
+  }, [data.feeds, data.favoritos]);
+  useEffect(() => { const t = data.lastNewsFetch ? Date.now() - new Date(data.lastNewsFetch).getTime() : Infinity; if (t > 20 * 60000) refresh(false); }, []);
+
+  // Sincronización Banxico
+  const syncBanxico = useCallback(async () => {
+    if (!data.token) { toast('Primero captura tu token de Banxico en Ajustes'); setTab('set'); return; }
+    if (!navigator.onLine) { toast('Sin conexión a internet'); return; }
+    setSyncing(true);
+    try {
+      const { json, via } = await fetchBanxico(data.token), got = parseBanxico(json), now = new Date().toISOString(), keys = Object.keys(got);
+      if (!keys.length) throw new Error('Banxico no devolvió datos (revisa el token)');
+      patch((d) => { const ind = { ...d.ind }, meta = { ...d.indMeta }; keys.forEach((k) => { ind[k] = got[k].val; meta[k] = { src: 'banxico', at: now, fecha: got[k].fecha }; }); return { ind, indMeta: meta, lastSync: now, syncMsg: `OK (${via}): ${keys.map((k) => k.toUpperCase() + ' ' + got[k].fecha).join(' · ')}` }; });
+      toast('Indicadores actualizados desde Banxico');
+    } catch (e) { patch({ syncMsg: 'Error: ' + e.message }); toast('No se pudo sincronizar: ' + e.message); }
+    setSyncing(false);
+  }, [data.token]);
+
+  // Respaldo externo
+  const doBackup = useCallback(async () => {
+    const r = await exportBackup(data);
+    if (r.ok) { patch({ lastExternalBackup: new Date().toISOString() }); toast(r.via === 'share' ? 'Respaldo enviado' : 'Respaldo descargado (.json)'); }
+  }, [data]);
+  const bannerOn = hasUserData(data) && (!data.lastExternalBackup || Date.now() - new Date(data.lastExternalBackup).getTime() > 864e5) && Date.now() > snooze;
+
+  const eInd = editK && IND_DEFS.find((d) => d.k === editK), eMeta = editK && data.indMeta[editK];
+  const title = { news: 'Noticias', calc: 'Calculadoras', agenda: 'Agenda fiscal', saved: 'Guardadas', set: 'Ajustes' }[tab];
+  return (
+    <div className="h-full flex flex-col max-w-xl mx-auto bg-slate-100 relative">
+      <header className="bg-slate-900 text-white safe-top shrink-0">
+        <div className="px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2"><span className="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center"><Icon name="Scale" size={18} /></span><div className="leading-tight"><div className="font-bold text-[15px]">MonitorFiscalMX</div><div className="text-[11px] text-slate-400">{title}</div></div></div>
+          <div className={`flex items-center gap-1.5 text-[11px] ${online ? 'text-emerald-300' : 'text-amber-300'}`}><span className={`w-2 h-2 rounded-full ${online ? 'bg-emerald-400' : 'bg-amber-400'}`} />{online ? 'En línea' : 'Sin conexión'}</div>
+        </div>
+        {bannerOn && <div className="px-3 pb-2"><div className="rounded-xl bg-emerald-600 flex items-center">
+          <button onClick={doBackup} className="flex-1 min-h-[48px] px-3 flex items-center gap-2 text-left text-sm font-semibold"><Icon name="CloudUpload" size={20} />Respaldo diario listo para guardar en Drive</button>
+          <button onClick={() => { const t = Date.now() + 6 * 3600e3; setSnooze(t); try { localStorage.setItem('mfmx_snooze', t); } catch (e) {} }} className="w-12 h-12 flex items-center justify-center" aria-label="Más tarde"><Icon name="X" size={18} /></button></div></div>}
+      </header>
+
+      <main ref={scrollRef} className="flex-1 overflow-y-auto px-3 pt-3 pb-6">
+        {tab === 'news' && <NewsView data={data} patch={patch} news={news} loadingNews={loadingNews} refresh={refresh} toast={toast} online={online} onSync={syncBanxico} syncing={syncing} editInd={setEditK} />}
+        {tab === 'calc' && <CalcView key={calcKey} ctx={ctx} toast={toast} />}
+        {tab === 'agenda' && <AgendaView data={data} patch={patch} toast={toast} />}
+        {tab === 'saved' && <SavedView data={data} patch={patch} toast={toast} />}
+        {tab === 'set' && <SettingsView data={data} patch={patch} setData={setData} toast={toast} onSync={syncBanxico} syncing={syncing} doBackup={doBackup} mirrors={mirrors} reloadMirrors={loadMirrors} />}
+      </main>
+
+      <nav className="bg-white border-t border-slate-200 shrink-0 safe-bottom"><div className="grid grid-cols-5">
+        {TABS.map(([k, l, ic]) => <button key={k} onClick={() => { if (k === tab && k === 'calc') setCalcKey((x) => x + 1); setTab(k); }} className={`h-16 flex flex-col items-center justify-center gap-0.5 ${tab === k ? 'text-sky-700' : 'text-slate-400'}`}><span className={`px-4 py-1 rounded-full ${tab === k ? 'bg-sky-100' : ''}`}><Icon name={ic} size={22} /></span><span className="text-[10.5px] font-semibold">{l}</span></button>)}
+      </div></nav>
+
+      {msg && <div className="fixed left-0 right-0 bottom-24 flex justify-center px-4 z-[60] pointer-events-none fadein"><div className="bg-slate-900 text-white text-sm px-4 py-3 rounded-xl shadow-lg max-w-sm text-center">{msg}</div></div>}
+
+      {eInd && <Sheet title={eInd.l} onClose={() => setEditK(null)}>
+        <div className="space-y-3">
+          <label className="block"><span className="text-[13px] text-slate-600">Valor actual</span><NumCell v={data.ind[editK]} w="w-full !h-12 !text-base" onCommit={(v) => {
+            if (editK === 'umaD') patch((x) => ({ ind: { ...x.ind, umaD: v, umaM: Math.round(v * DIAS_MES * 100) / 100, umaA: Math.round(v * DIAS_MES * 12 * 100) / 100, umi: v }, indMeta: { ...x.indMeta, umaD: { src: 'manual', at: new Date().toISOString() } } }));
+            else patch((x) => ({ ind: { ...x.ind, [editK]: v }, indMeta: { ...x.indMeta, [editK]: { src: 'manual', at: new Date().toISOString() } } }));
+            toast('Indicador actualizado');
+          }} /></label>
+          <p className="text-xs text-slate-500">{eMeta ? (eMeta.src === 'banxico' ? `Banxico · dato del ${eMeta.fecha} · sincronizado ${fmtDT(eMeta.at)}` : `Editado manualmente ${fmtDT(eMeta.at)}`) : 'Valor de referencia incluido en la app.'}{editK === 'umaD' ? ' Al guardar se recalculan UMA mensual, anual y UMI.' : ''}</p>
+          <p className="text-[11px] text-slate-400">Escribe el valor y toca fuera del campo para guardarlo.</p>
+          <Btn kind="dark" className="w-full" onClick={() => setEditK(null)}>Listo</Btn>
+        </div></Sheet>}
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
