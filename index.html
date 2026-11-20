@@ -108,10 +108,10 @@ const DEFAULT_FEEDS = [
   { id: 'f4', name: 'Google News · IMSS / Infonavit', cat: 'laboral', url: gn('IMSS Infonavit LFT laboral seguridad social Mexico'), on: true },
   { id: 'f5', name: 'El Economista · Sector financiero', cat: 'finanzas', url: 'https://www.eleconomista.com.mx/rss/sectorfinanciero.xml', on: true },
   { id: 'f6', name: 'Expansión · Economía', cat: 'finanzas', url: 'https://expansion.mx/rss/economia', on: true },
-  { id: 'f7', name: 'CNBC Top News', cat: 'global', url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', on: true },
-  { id: 'f8', name: 'MarketWatch Top Stories', cat: 'global', url: 'https://feeds.content.dowjones.io/public/rss/mw_topstories', on: true },
+  { id: 'f7', name: 'Bloomberg Línea', cat: 'global', url: 'https://www.bloomberglinea.com/arc/outboundfeeds/rss/?outputType=xml', on: true },
+  { id: 'f8', name: 'Google News · Economía global', cat: 'global', url: 'https://news.google.com/rss/search?q=economia+global+mercados+financieros+FED+inflacion&hl=es-419&gl=MX&ceid=MX:es-419', on: true },
 ];
-const NEWS_CATS = [['all', 'Todas'], ['fiscal', 'Fiscal/DOF'], ['laboral', 'Laboral/IMSS'], ['contable', 'Contabilidad/IMCP'], ['finanzas', 'Finanzas MX'], ['global', 'Global (EN)']];
+const NEWS_CATS = [['all', 'Todas'], ['fiscal', 'Fiscal/DOF'], ['laboral', 'Laboral/IMSS'], ['contable', 'Contabilidad/IMCP'], ['finanzas', 'Finanzas MX'], ['global', 'Global']];
 const CAT_LABEL = Object.fromEntries(NEWS_CATS);
 
 // Indicadores (referencia; sincroniza con Banxico o edita manualmente)
@@ -147,13 +147,16 @@ const DEFAULT_DATA = {
   token: '', ind: DEFAULT_IND, indMeta: {}, lastSync: null, syncMsg: '',
   T: DEFAULT_T, feeds: DEFAULT_FEEDS,
   favoritos: [], notas: {}, recordatorios: [], agendaEstado: {},
-  lastExternalBackup: null, lastNewsFetch: null,
+  criterios: [], lastExternalBackup: null, lastNewsFetch: null,
 };
 function mergeData(base, saved) {
   const d = { ...base, ...saved };
   d.ind = { ...base.ind, ...(saved.ind || {}) };
   d.T = { ...base.T, ...(saved.T || {}), topes: { ...base.T.topes, ...((saved.T || {}).topes || {}) } };
   if (!Array.isArray(d.feeds) || !d.feeds.length) d.feeds = base.feeds;
+  // Migración: reemplaza las fuentes en inglés anteriores (CNBC / MarketWatch) por las nuevas en español
+  d.feeds = d.feeds.map((f) => (/cnbc\.com|dowjones\.io/.test(f.url) ? (base.feeds.find((b) => b.id === f.id) || f) : f));
+  if (!Array.isArray(d.criterios)) d.criterios = [];
   return d;
 }
 const LS_KEY = 'mfmx_data_v1';
@@ -161,7 +164,7 @@ function loadData() {
   try { const raw = localStorage.getItem(LS_KEY); if (raw) return mergeData(DEFAULT_DATA, JSON.parse(raw)); } catch (e) {}
   return mergeData(DEFAULT_DATA, {});
 }
-const hasUserData = (d) => !!(d.token || d.favoritos.length || Object.keys(d.notas).length || d.recordatorios.length || Object.keys(d.indMeta).length || Object.keys(d.agendaEstado).length);
+const hasUserData = (d) => !!(d.token || (d.criterios || []).length || d.favoritos.length || Object.keys(d.notas).length || d.recordatorios.length || Object.keys(d.indMeta).length || Object.keys(d.agendaEstado).length);
 
 /* =====================================================================
    3. ALMACENAMIENTO: IndexedDB (noticias offline + espejo diario de 7 días)
@@ -198,12 +201,10 @@ async function mirrorBackup(data) {
    4. RESPALDO EXTERNO (Compartir → Google Drive / WhatsApp)
    ===================================================================== */
 const buildBackup = (data) => ({ app: 'MonitorFiscalMX', version: 1, exportedAt: new Date().toISOString(), data });
-async function exportBackup(data) {
-  const name = `monitorfiscal-respaldo-${localISO()}.json`;
-  const json = JSON.stringify(buildBackup(data), null, 2);
+async function exportFile(name, json, title) {
   let file = null; try { file = new File([json], name, { type: 'application/json' }); } catch (e) {}
   if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-    try { await navigator.share({ files: [file], title: 'Respaldo MonitorFiscalMX', text: 'Respaldo MonitorFiscalMX ' + localISO() }); return { ok: true, via: 'share' }; }
+    try { await navigator.share({ files: [file], title, text: title + ' ' + localISO() }); return { ok: true, via: 'share' }; }
     catch (e) { if (e && e.name === 'AbortError') return { ok: false, cancelled: true }; }
   }
   const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
@@ -211,6 +212,7 @@ async function exportBackup(data) {
   setTimeout(() => URL.revokeObjectURL(url), 4000);
   return { ok: true, via: 'download' };
 }
+const exportBackup = (data) => exportFile(`monitorfiscal-respaldo-${localISO()}.json`, JSON.stringify(buildBackup(data), null, 2), 'Respaldo MonitorFiscalMX');
 
 /* =====================================================================
    5. MOTOR FISCAL / LABORAL COMPARTIDO
@@ -905,6 +907,7 @@ function NewsView({ data, patch, news, loadingNews, refresh, toast, online, onSy
           <div className="flex gap-2 mt-3">
             <a href={n.link} target="_blank" rel="noopener" className="flex-1 min-h-[44px] rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold flex items-center justify-center gap-2"><Icon name="ExternalLink" size={16} />Leer</a>
             <button onClick={() => { toggleFav(n); toast(favIds.has(n.id) ? 'Quitada de Guardadas' : 'Guardada para leer sin internet'); }} className={`w-12 min-h-[44px] rounded-xl flex items-center justify-center ${favIds.has(n.id) ? 'bg-amber-400 text-slate-900' : 'bg-slate-100 text-slate-700'}`} aria-label="Guardar"><Icon name="Star" size={18} /></button>
+            <a href={'https://translate.google.com/translate?sl=auto&tl=es&u=' + encodeURIComponent(n.link)} target="_blank" rel="noopener" className="px-3 min-h-[44px] rounded-xl bg-slate-50 text-slate-500 text-xs font-semibold flex items-center gap-1" aria-label="Traducir con Google Translate"><Icon name="Languages" size={15} />Traducir</a>
             <a href={waLink(`*${n.title}*\n${n.link}\n— MonitorFiscalMX`)} target="_blank" rel="noopener" className="w-12 min-h-[44px] rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center" aria-label="WhatsApp"><Icon name="Send" size={18} /></a>
           </div>
         </Card>))}
@@ -1118,6 +1121,273 @@ function SettingsView({ data, patch, setData, toast, onSync, syncing, doBackup, 
 }
 
 /* =====================================================================
+   11b. ASISTENTE FISCAL Y FINANCIERO — motor local (RAG por relevancia, sin APIs ni costo)
+   Fuentes: (1) base de conocimiento legal + criterios propios, (2) notas y noticias guardadas,
+   (3) indicadores vigentes, (4) agenda de vencimientos.
+   Para ampliar la base precargada agrega una ficha a KB_BASE o usa "+ Nuevo Criterio" en la app.
+   Plantillas en las fichas: {umaD} {umaM} {umaA} {smg} {zlfn} {umi} {usd} {mora} {pror} {vales40M} {ag30} {pv15} {sep90} {ex5} {t25} {t3}
+   ===================================================================== */
+const KB_CATS = ['LISR', 'LIVA', 'CFF', 'LFT', 'LSS/IMSS', 'Infonavit', 'Contabilidad', 'Otros'];
+const KB_BASE = [
+  // ---------------- LFT ----------------
+  { id: 'lft-vac', cat: 'LFT', t: 'Vacaciones dignas y prima vacacional', kw: 'vacaciones dignas dias prima vacacional 12 dias antiguedad 25%', fund: 'Arts. 76, 78, 79, 80 y 81 LFT',
+    txt: `Primer año: 12 días laborables; aumenta 2 días por año hasta 20 (5° año); después 2 días cada 5 años (6-10: 22, 11-15: 24, 16-20: 26, 21-25: 28, 26-30: 30, 31-35: 32). No pueden compensarse con dinero (Art. 79, salvo terminación de la relación) y deben disfrutarse dentro de los 6 meses siguientes al año de servicios (Art. 81). La prima vacacional mínima es 25% del salario de los días de vacaciones (Art. 80). Ejemplo: 3 años de antigüedad = 16 días; con sueldo diario de $500 y prima 25%: 16×500×25% = $2,000 de prima.` },
+  { id: 'lft-aguinaldo', cat: 'LFT', t: 'Aguinaldo: días mínimos, plazo y proporcional', kw: 'aguinaldo 15 dias 20 diciembre proporcional gratificacion anual', fund: 'Art. 87 LFT; Art. 93 fr. XIV LISR',
+    txt: `Mínimo 15 días de salario, pagado antes del 20 de diciembre. Si el trabajador laboró menos de un año, recibe la parte proporcional por los días trabajados. Fórmula: salario diario × días de aguinaldo × (días trabajados en el año ÷ 365). En ISR está exento hasta 30 UMA ({ag30} con la UMA vigente); el excedente es gravable. Ejemplo: sueldo $400 diarios, 15 días, año completo = $6,000 (exento por ser menor a {ag30}).` },
+  { id: 'lft-ptu', cat: 'LFT', t: 'PTU: reparto de utilidades', kw: 'ptu utilidades reparto 10% tope tres meses participacion', fund: 'Arts. 117-131 LFT; Art. 93 fr. XIV LISR; Art. 10 LISR',
+    txt: `Se reparte el 10% de la renta gravable de la empresa: 50% por días trabajados y 50% por salarios devengados. Tope individual: 3 meses de salario o el promedio de la PTU recibida en los últimos 3 años, lo que más beneficie (Art. 127 fr. VIII). Se paga dentro de los 60 días siguientes a la fecha límite de la declaración anual: normalmente hasta el 30 de mayo (personas morales) y 29 de junio (personas físicas). Exento de ISR hasta 15 UMA ({pv15}). No se paga a directores, administradores ni gerentes generales.` },
+  { id: 'lft-extra', cat: 'LFT', t: 'Horas extra: pago y exención de ISR', kw: 'horas extra tiempo extraordinario doble triple exencion 50% 5 uma semana', fund: 'Arts. 66-68 LFT; Art. 93 fr. I LISR',
+    txt: `Las horas extra no pueden exceder 3 horas diarias ni 3 veces por semana; se pagan al 100% adicional (doble). Lo que exceda de 9 horas semanales se paga al 200% adicional (triple) y es totalmente gravado. ISR: está exento el 50% del pago por tiempo extra (sin exceder 5 UMA por semana: {ex5} con la UMA vigente); las horas fuera de los límites legales son gravadas. Ejemplo: 6 horas dobles con sueldo de $400/día (jornada 8 h): valor hora $50 → 6×50×2 = $600; exento 50% = $300 (menor al tope).` },
+  { id: 'lft-jornada', cat: 'LFT', t: 'Jornada, descanso semanal, prima dominical y días festivos', kw: 'jornada diurna nocturna mixta descanso semanal domingo prima dominical festivo pago doble 25%', fund: 'Arts. 58-61, 69, 71 y 75 LFT',
+    txt: `Jornada máxima: diurna 8 h, nocturna 7 h, mixta 7.5 h. Por cada 6 días de trabajo, 1 de descanso con goce de sueldo (Art. 69). Prima dominical: 25% adicional sobre el salario de un día ordinario si labora en domingo (Art. 71). Si labora en día de descanso semanal o festivo obligatorio (Art. 74, ej. 1 ene, primer lunes de feb, 1 may, 16 sep, 20 nov, 1 dic de cada 6 años, 25 dic), recibe además de su salario un pago doble: en total triple (Art. 73 y 75).` },
+  { id: 'lft-liq', cat: 'LFT', t: 'Finiquito vs. liquidación e indemnización constitucional', kw: 'finiquito liquidacion indemnizacion despido injustificado 90 dias 20 dias por año separacion', fund: 'Arts. 48, 50, 87, 162 LFT',
+    txt: `Finiquito (renuncia o término): partes proporcionales de aguinaldo, vacaciones y prima vacacional, y salarios pendientes. Liquidación por despido injustificado: finiquito + indemnización de 3 meses (90 días de salario integrado, Art. 48 y 50) + 20 días por año de servicios si el patrón no reinstala (Art. 50 fr. II) + prima de antigüedad (12 días por año con tope de 2 SMG, Art. 162). Salarios vencidos: hasta 12 meses y luego intereses del 2% mensual sobre 15 meses de salario (Art. 48). Ejemplo: SDI $600 → 90×600 = $54,000 de indemnización de 3 meses.` },
+  { id: 'lft-pa', cat: 'LFT', t: 'Prima de antigüedad', kw: 'prima antiguedad 12 dias por año doble salario minimo 15 años renuncia', fund: 'Art. 162 LFT',
+    txt: `Equivale a 12 días de salario por cada año de servicios, con tope de salario diario de 2 veces el SMG vigente (hoy 2 × {smg} = tope por día). Se paga siempre en despido y por muerte o invalidez, y en renuncia voluntaria solo con 15 años o más de servicios. Ejemplo: 5 años con salario superior al tope = 12 × 5 × (2×{smg}).` },
+  { id: 'lft-subcon', cat: 'LFT', t: 'Subcontratación y servicios especializados (REPSE)', kw: 'subcontratacion outsourcing repse servicios especializados icsoe sisub registro', fund: 'Arts. 12-15 LFT; Art. 15-A a 15-D LSS',
+    txt: `Desde 2021 está prohibida la subcontratación de personal. Solo se permiten servicios especializados u obras especializadas que no formen parte del objeto social ni de la actividad económica preponderante del contratante, con registro en el REPSE (STPS). Los prestadores presentan cuatrimestralmente el ICSOE (IMSS) y el SISUB (Infonavit), en enero, mayo y septiembre. Sin REPSE vigente, el IVA y la deducción del servicio pueden rechazarse (Art. 27 fr. XVIII LISR; Art. 5 fr. II LIVA).` },
+  { id: 'lft-desc', cat: 'LFT', t: 'Descuentos permitidos al salario: Fonacot, préstamos y pensión alimenticia', kw: 'descuentos salario fonacot prestamo empresa pension alimenticia embargo retencion', fund: 'Art. 110 LFT; Ley del Fonacot',
+    txt: `Solo se pueden descontar conceptos limitados en la ley: deudas con el patrón por anticipos o pagos en exceso, cuotas sindicales, pensión alimenticia ordenada por autoridad competente, créditos Infonavit y Fonacot (hasta el 20% del salario, Art. 110 fr. VI/Art. 97 LFT). Los descuentos por deudas con el patrón no pueden exceder el monto del salario de un mes y se hacen en un máximo del 30% del excedente del salario mínimo. La pensión alimenticia se fija por el juez como % del ingreso neto o monto fijo.` },
+  { id: 'lss-vales', cat: 'LSS/IMSS', t: 'Vales de despensa: tope para SBC e ISR', kw: 'vales despensa tope 40% uma previsión social exento sbc excedente integra', fund: 'Art. 27 fr. VI LSS; Arts. 7 y 28 fr. XXX LISR',
+    txt: `Las despensas (vales, tarjeta electrónica o especie) no integran al SBC mientras su monto mensual no rebase el 40% de la UMA mensual: hoy {vales40M}. Si otorgas más, el excedente se suma al SBC (SBC mixto). En ISR son previsión social: están exentas hasta 1 UMA anual elevada al año por trabajador si su ingreso rebasa 1 SMG anual (Art. 7 LISR), y su deducibilidad para la empresa se limita al 53% (47% si la proporción de prestaciones exentas no disminuyó respecto al ejercicio anterior; Art. 28 fr. XXX). Ejemplo: vales de $2,000 al mes con tope de {vales40M} → el excedente de $2,000 − tope integra al SBC.` },
+  // ---------------- LISR ----------------
+  { id: 'isr-sueldos', cat: 'LISR', t: 'Retención de ISR a sueldos y subsidio para el empleo', kw: 'retencion isr sueldos salarios tarifa subsidio empleo nomina mensual', fund: 'Arts. 96 y 99 LISR; Decreto del subsidio para el empleo',
+    txt: `El patrón retiene el ISR aplicando al ingreso gravable del periodo la tarifa del Art. 96 (límite inferior, cuota fija y % sobre el excedente), escalada por los días del periodo, y resta el subsidio para el empleo cuando el ingreso mensual no rebasa el límite del decreto. Debe timbrar CFDI de nómina (Art. 99 fr. III) y enterar las retenciones a más tardar el día 17 del mes siguiente. Esta app calcula con las tarifas de Ajustes. Ejemplo (mensual): ingreso gravable $10,000 → (10,000 − 7,168.52) × 10.88% + 420.95 = $729.02 de ISR antes de subsidio.` },
+  { id: 'isr-separ', cat: 'LISR', t: 'ISR por separación (indemnización y prima de antigüedad)', kw: 'isr separacion indemnizacion finiquito 90 uma por año exento gravable ultimo sueldo mensual', fund: 'Arts. 93 fr. XIII, 95 y 96 LISR',
+    txt: `Exento: 90 UMA por cada año de servicio o fracción mayor de 6 meses ({sep90} por año con la UMA vigente). El excedente es gravable: se divide entre los años de servicio, el cociente se suma al último sueldo mensual ordinario, se aplica la tarifa del Art. 96, se resta el ISR del sueldo mensual y la diferencia entre el cociente da la tasa media que se aplica al total gravable. Ejemplo: 5 años de servicio → exentos 5 × 90 UMA.` },
+  { id: 'isr-autos', cat: 'LISR', t: 'Deducción de automóviles: tope de inversión y arrendamiento', kw: 'automovil auto coche vehiculo deduccion tope 175000 250000 electrico arrendamiento 200 diarios', fund: 'Art. 36 fr. II y Art. 28 fr. XIII LISR',
+    txt: `Compra: solo es deducible el monto original hasta $175,000 ($250,000 en autos eléctricos o híbridos), depreciado al 25% anual. El IVA acreditable se limita en la misma proporción. Arrendamiento: tope diario de $200 (autos de combustión) o $850 (eléctricos/híbridos), según la ley vigente; si pagas más, solo deduces proporcionalmente. Ejemplo: auto de $300,000 → proporción deducible 175,000/300,000 = 58.33% y el IVA acreditable también 58.33%. Valida los topes en Ajustes.` },
+  { id: 'isr-viaticos', cat: 'LISR', t: 'Viáticos, hospedaje y alimentación: topes', kw: 'viaticos hospedaje alimentacion viaje tope diario nacional extranjero deduccion', fund: 'Art. 28 fr. V LISR',
+    txt: `Los viáticos son deducibles si son estrictamente indispensables, el beneficiario es empleado del contribuyente o presta servicios, y se pagan con medios electrónicos (excepto en zonas sin servicios financieros hasta ciertos montos). Topes por persona y por día: territorio nacional $750 (alimentación) y $3,850 (hospedaje); extranjero $1,500 (alimentación) y $7,700 (hospedaje) — valores editables en Ajustes. El excedente no es deducible.` },
+  { id: 'isr-requisitos', cat: 'LISR', t: 'Requisitos de las deducciones autorizadas', kw: 'requisitos deducciones estrictamente indispensable cfdi pago efectivo 2000 medios electronicos', fund: 'Arts. 25, 27 y 28 LISR; Art. 29 y 29-A CFF',
+    txt: `Para deducir: (1) estrictamente indispensable para el objeto social; (2) amparado con CFDI con requisitos fiscales (Art. 29 y 29-A CFF) y registrado en contabilidad; (3) pagos mayores a $2,000 mediante transferencia, cheque nominativo, tarjeta de crédito, débito o servicios (no efectivo) — Art. 27 fr. III; (4) cumplimiento de retenciones de ISR/IVA e IMSS cuando aplique; (5) deducir en el ejercicio en que se erogó (Art. 27 fr. IV). Gastos con efectivo mayor a $2,000 no son deducibles ni acreditables en IVA.` },
+  { id: 'isr-pp', cat: 'LISR', t: 'Pagos provisionales de personas morales', kw: 'pagos provisionales isr persona moral coeficiente utilidad 17 mes siguiente acumulados', fund: 'Art. 14 LISR',
+    txt: `Se presentan a más tardar el día 17 del mes siguiente. Fórmula: ingresos nominales acumulados del periodo × coeficiente de utilidad del último ejercicio − pérdidas fiscales pendientes de amortizar = utilidad fiscal estimada; × 30% = ISR; se restan pagos provisionales anteriores y retenciones. Ejemplo: ingresos acumulados $1,000,000, CU 0.20, sin pérdidas → utilidad $200,000 × 30% = $60,000 menos pagos previos.` },
+  { id: 'isr-resico', cat: 'LISR', t: 'RESICO personas físicas: tasas y retención', kw: 'resico regimen simplificado confianza tasas 1% 2.5% 1.25 retencion limite 3.5 millones', fund: 'Arts. 113-E a 113-J LISR',
+    txt: `Pago mensual definitivo sobre ingresos efectivamente cobrados: 1% hasta $25,000 mensuales, 1.1%, 1.5%, 2% y 2.5% en los rangos superiores (hasta $83,333.33 mensuales). Límite de ingresos: $3.5 millones anuales. Si el cliente es persona moral, retiene 1.25% de ISR sobre el pago sin IVA, que es pago definitivo. No retiene 2/3 de IVA. Ejemplo: servicio de $10,000 + IVA a una persona moral: ISR retenido $125.` },
+  { id: 'isr-dep', cat: 'LISR', t: 'Depreciación fiscal y actualización de la inversión', kw: 'depreciacion deduccion inversion moi activos fijos porcentaje maximo actualizacion inpc 30% computo 25% autos 10%', fund: 'Arts. 31-37 LISR (tasas Art. 34; actualización Art. 37)',
+    txt: `La deducción de inversiones se hace en línea recta aplicando tasas máximas anuales sobre el monto original (MOI): construcciones 5%, mobiliario y equipo de oficina 10%, equipo de cómputo 30%, automóviles 25%, maquinaria 10% (varía por actividad). En el ejercicio de adquisición se deduce proporcionalmente por meses (mitad del mes en que se adquiere). La deducción se actualiza con el factor INPC de la mitad del periodo ÷ INPC del mes de adquisición. Ejemplo: equipo de cómputo $50,000 → $15,000 anuales sin actualizar.` },
+  { id: 'isr-perd', cat: 'LISR', t: 'Pérdidas fiscales: amortización', kw: 'perdidas fiscales amortizar 10 años actualizacion ejercicio', fund: 'Arts. 57 y 58 LISR',
+    txt: `La pérdida fiscal puede amortizarse contra utilidades fiscales de los 10 ejercicios siguientes, actualizada por INPC. Si no se amortiza en un ejercicio pudiendo hacerlo, pierde el derecho hasta por la cantidad que pudo amortizarse. No puede trasladarse entre contribuyentes salvo supuestos de fusión o escisión.` },
+  { id: 'isr-anual', cat: 'LISR', t: 'Declaración anual: fechas y obligaciones', kw: 'declaracion anual marzo abril personas morales fisicas 31 marzo 30 abril fecha limite', fund: 'Arts. 9 y 150 LISR',
+    txt: `Personas morales: dentro de los 3 meses siguientes al cierre del ejercicio (31 de marzo en año calendario). Personas físicas: en abril (hasta el 30 de abril). Las personas morales determinan PTU con la renta gravable de esta declaración. Se acompañan DIOT, contabilidad electrónica y declaraciones informativas que correspondan.` },
+  { id: 'isr-donat', cat: 'LISR', t: 'Donativos deducibles', kw: 'donativos deduccion donataria autorizada 7% utilidad fiscal', fund: 'Art. 27 fr. I LISR; Arts. 82-83 LISR',
+    txt: `Los donativos a donatarias autorizadas son deducibles hasta el 7% de la utilidad fiscal del ejercicio anterior (personas morales) o 7% de los ingresos acumulables de personas físicas. Requiere CFDI de la donataria autorizada vigente en el padrón del SAT.` },
+  // ---------------- LIVA ----------------
+  { id: 'iva-tasas', cat: 'LIVA', t: 'Tasas de IVA: 16%, 8% frontera y 0%', kw: 'iva tasa 16% 8% frontera 0% exento general region fronteriza', fund: 'Arts. 1, 2, 2-A, 9 y 15 LIVA; Decreto estímulos región fronteriza',
+    txt: `Tasa general 16%. Región fronteriza (norte y sur) con el decreto de estímulos: 8% sobre enajenaciones, servicios y arrendamientos dentro de la región. Tasa 0%: alimentos y medicinas en general, exportación, agricultura, etc. (Art. 2-A); tienen derecho a acreditamiento y devolución. Actividades exentas (Art. 9, 15, 20): renta casa-habitación, servicios médicos, educación autorizada; no dan derecho a acreditar el IVA relacionado. Ejemplo: venta de $1,000 + IVA 16% = $1,160; en frontera 8% = $1,080.` },
+  { id: 'iva-acred', cat: 'LIVA', t: 'Requisitos del IVA acreditable', kw: 'iva acreditable requisitos acreditamiento efectivamente pagado cfdi estrictamente indispensable', fund: 'Arts. 4, 5 y 5-D LIVA',
+    txt: `Para acreditar el IVA: (1) la erogación debe ser deducible para ISR; (2) estar trasladado expresamente y por separado en CFDI; (3) estar efectivamente pagado en el mes de acreditamiento (Art. 5 fr. III); (4) pagos > $2,000 con medios no efectivo. El acreditamiento se hace en el mes en que se cumple; si no se acredita en ese mes puede hacerse en los 3 meses siguientes (Art. 5-D). Declaración mensual: día 17 del mes siguiente.` },
+  { id: 'iva-ret', cat: 'LIVA', t: 'Retenciones de IVA: honorarios, arrendamiento y fletes', kw: 'retencion iva 2/3 honorarios arrendamiento fletes persona moral 10.67% retenido', fund: 'Art. 1-A fr. II LIVA; Arts. 106 y 116 LISR',
+    txt: `Las personas morales deben retener 2/3 partes del IVA (10.6667% de la base) por honorarios y arrendamiento pagados a personas físicas, y el 4% por autotransporte terrestre de carga. Además retienen 10% de ISR por honorarios (Art. 106 LISR) y por arrendamiento a personas físicas (Art. 116 LISR). Ejemplo: honorarios $10,000 + IVA $1,600 → ISR retenido $1,000, IVA retenido $1,066.67, pago neto $9,533.33.` },
+  { id: 'iva-saldo', cat: 'LIVA', t: 'Saldo a favor de IVA: acreditar o devolver', kw: 'saldo a favor iva devolucion acreditar compensar solicitud', fund: 'Art. 6 LIVA; Arts. 22 y 23 CFF',
+    txt: `Cuando el IVA acreditable supera al trasladado, el saldo puede acreditarse contra IVA de meses siguientes o solicitarse en devolución (FED) hasta que prescriba el derecho (5 años). La devolución requiere contabilidad electrónica al corriente, opinión positiva y CFDI de lo acreditado.` },
+  // ---------------- CFF ----------------
+  { id: 'cff-act', cat: 'CFF', t: 'Actualización y recargos por pago extemporáneo', kw: 'actualizacion recargos factor inpc mora prorroga 1.47% 0.98% extemporaneo', fund: 'Arts. 17-A, 21 y 66 CFF; Ley de Ingresos de la Federación',
+    txt: `Factor de actualización = INPC del mes anterior al del pago ÷ INPC del mes anterior al del vencimiento (Art. 17-A); si es menor a 1 se usa 1. Recargos: tasa mensual por mora (hoy {mora}%) sobre la contribución actualizada, por cada mes o fracción, hasta 60 meses (Art. 21). En pago en parcialidades o prórroga la tasa es {pror}% mensual. Ejemplo: contribución $10,000, factor 1.0300, 6 meses de atraso: actualización $300; recargos = 10,300 × {mora}% × 6.` },
+  { id: 'cff-fac', cat: 'CFF', t: 'Facultades de comprobación y prescripción', kw: 'prescripcion facultades comprobacion 5 años 10 años auditoria sat plazo', fund: 'Arts. 67, 46-A CFF',
+    txt: `Las facultades de las autoridades fiscales para determinar contribuciones se extinguen en 5 años contados desde que se presentó (o debió presentarse) la declaración. El plazo es de 10 años cuando no se presentó la declaración, no se inscribió en el RFC o no se llevó contabilidad. La revisión en gabinete (Art. 46-A) concluye en 12 meses. Debes conservar la contabilidad 5 años (Art. 30 CFF).` },
+  { id: 'cff-conta', cat: 'CFF', t: 'Contabilidad electrónica y conservación', kw: 'contabilidad electronica balanza catalogo cuentas envio 3 mes segundo conservar 5 años', fund: 'Art. 28 CFF; Reglas 2.8.1.x RMF; Art. 30 CFF',
+    txt: `Se envía mensualmente la balanza de comprobación; el catálogo de cuentas se envía al inicio o cuando cambia; las pólizas y auxiliares solo bajo requerimiento. Las personas morales envían la balanza a más tardar el día 3 del segundo mes posterior al periodo (personas físicas: día 5). Existe balanza de cierre anual (Ajustes). La contabilidad se conserva 5 años contados desde la presentación de la declaración del ejercicio.` },
+  { id: 'cff-cfdi', cat: 'CFF', t: 'CFDI: cancelación, nómina y requisitos', kw: 'cfdi factura cancelacion nomina complemento pago pue ppd requisitos', fund: 'Arts. 29 y 29-A CFF; Regla 2.7.1.38 RMF; Art. 99 fr. III LISR',
+    txt: `Los CFDI se cancelan dentro del mismo ejercicio en que se emitieron, normalmente con aceptación del receptor, salvo supuestos de excepción (p. ej. montos menores a $1,000 o nómina; confirma en la regla 2.7.1.38 RMF vigente). Si la factura es PPD (pago en parcialidades o diferido) debe emitirse el complemento de pago al cobrar. El CFDI de nómina se emite a más tardar el último día del periodo (en el mes del pago). Los requisitos incluyen RFC, régimen fiscal, uso de CFDI y domicilio fiscal del receptor (CFDI 4.0).` },
+  { id: 'cff-opinion', cat: 'CFF', t: 'Opinión de cumplimiento 32-D y buzón tributario', kw: 'opinion cumplimiento 32-D buzon tributario notificacion mensajes negativa', fund: 'Arts. 32-D y 17-K CFF',
+    txt: `La opinión de cumplimiento (32-D) es requisito para contratar con gobierno y para ciertos trámites. Es negativa si hay omisión de declaraciones o adeudos firmes. El buzón tributario es el medio de notificación electrónica; se tienen 3 días para abrir el mensaje y la notificación surte efectos al abrirlo o al 4° día. Mantén contacto vigente (correo y teléfono) en el buzón.` },
+  { id: 'cff-extemp', cat: 'CFF', t: 'Cumplimiento espontáneo y multas', kw: 'declaracion extemporanea multa espontaneo cumplimiento recargos omision', fund: 'Arts. 73, 75, 76, 81 y 82 CFF',
+    txt: `Si pagas antes de que la autoridad te requiera o inicie facultades, el cumplimiento es espontáneo y no se impone multa (Art. 73), pero se pagan actualización y recargos. Multas por omisión en el pago varían de 55% a 75% del impuesto omitido (Art. 76); por no presentar declaraciones hay multas fijas (Arts. 81 y 82) cuyos montos se actualizan cada año; consulta el monto vigente en el Anexo 5 de la RMF.` },
+  // ---------------- LSS / IMSS ----------------
+  { id: 'lss-sbc', cat: 'LSS/IMSS', t: 'Salario Base de Cotización (SBC): integración y tope', kw: 'sbc salario base cotizacion factor integracion fijo variable mixto tope 25 uma bimestre', fund: 'Arts. 27, 28, 30 y 32 LSS',
+    txt: `El SBC integra salario, gratificaciones, prestaciones en dinero o especie y todo lo que se entregue por el trabajo. SBC fijo = salario diario × factor de integración (1 + días aguinaldo/365 + días vacaciones × prima vacacional/365). Variable: promedio de ingresos del bimestre anterior ÷ días. Tope: 25 UMA ({t25} diarios). Conceptos que no integran con límite: vales de despensa (40% UMA mensual), premios de puntualidad/asistencia (10% SBC), fondos de ahorro, PTU, aguinaldo y prima vacacional dentro de ley. Ejemplo: sueldo $400, 15 días de aguinaldo, 12 días de vacaciones y 25% → factor 1.0493 → SBC $419.73.` },
+  { id: 'lss-cuotas', cat: 'LSS/IMSS', t: 'Cuotas obrero-patronales IMSS por ramo', kw: 'cuotas imss obrero patronal enfermedad maternidad invalidez vida cesantia vejez guarderias riesgo trabajo retiro porcentajes', fund: 'Arts. 25, 106, 107, 147, 168, 211 LSS',
+    txt: `Enfermedades y maternidad: cuota fija patronal 20.40% de la UMA diaria; excedente de 3 UMA: patrón 1.10%, obrero 0.40%; prestaciones en dinero 0.70% patrón y 0.25% obrero; gastos médicos pensionados 1.05% y 0.375%. Invalidez y vida: 1.75% y 0.625%. Guarderías: 1% patrón. Riesgo de trabajo: prima del patrón (mínimo 0.5%). Retiro: 2% patrón. Cesantía y vejez: obrero 1.125% y patronal progresiva por rango de SBC. Todo hasta el tope de 25 UMA ({t25}). Se paga mensual (IMSS) el día 17 del mes siguiente; RCV bimestral.` },
+  { id: 'lss-prima', cat: 'LSS/IMSS', t: 'Prima de riesgo de trabajo (revisión anual)', kw: 'prima riesgo trabajo siniestralidad formula febrero 0.5% 15% dictamen', fund: 'Arts. 72 a 74 LSS; Reglamento de Clasificación de Empresas',
+    txt: `Se calcula con los siniestros del año calendario anterior: Prima = [(S/365) + V × (I + D)] × (F/N) + M, con V = 28, F = 2.3, M = 0.005 (0.5%); S = días subsidiados, I = suma de % de incapacidades permanentes ÷ 100, D = defunciones, N = trabajadores promedio. Mínimo 0.5% y máximo 15%; no puede variar más de 1 punto porcentual respecto a la anterior. Se presenta en febrero y aplica desde el 1° de marzo.` },
+  { id: 'lss-inc', cat: 'LSS/IMSS', t: 'Incapacidades: subsidios IMSS', kw: 'incapacidad enfermedad general riesgo trabajo subsidio 60% 100% cuarto dia maternidad', fund: 'Arts. 58, 96, 101, 102 LSS; Art. 42 LFT',
+    txt: `Enfermedad general: subsidio del 60% del último SBC desde el 4° día de incapacidad (el patrón no paga los primeros 3 días). Riesgo de trabajo: 100% del SBC desde el primer día. Maternidad: 100% del SBC por 42 días antes y 42 después del parto. Para el cálculo de nómina se reporta la incapacidad a IMSS vía IDSE y el patrón puede abonar prestaciones de ley (fondo de ahorro, etc.).` },
+  { id: 'lss-idse', cat: 'LSS/IMSS', t: 'Altas, bajas y modificaciones de salario ante el IMSS', kw: 'alta baja modificacion salario idse plazo 5 dias habiles movimientos afiliatorios', fund: 'Arts. 15 fr. I, 34 y 38 LSS',
+    txt: `Altas y bajas se presentan dentro de los 5 días hábiles siguientes al inicio o terminación de la relación laboral (IDSE o IMSS Digital); el IMSS considera la fecha real de ingreso. Modificaciones de salario: cuando cambia el SBC fijo, dentro de 5 días hábiles; variable o mixto: cada bimestre (enero, marzo, mayo, julio, septiembre y noviembre) con vigencia al primer día del bimestre siguiente.` },
+  { id: 'lss-m40', cat: 'LSS/IMSS', t: 'Modalidad 40 (continuación voluntaria)', kw: 'modalidad 40 continuacion voluntaria pension 250 semanas cinco años 25 uma cuota', fund: 'Arts. 218 a 220 LSS',
+    txt: `Permite seguir cotizando para pensión (invalidez, vida, retiro, cesantía y vejez) sin trabajar. Requisitos: haber causado baja del régimen obligatorio, tener al menos 52 semanas cotizadas en los 5 años previos y solicitarlo dentro de 5 años de la baja. El salario puede ser de 1 a 25 UMA. Cuota mensual = SBC mensual × tasa total de esos ramos (crece cada año hasta 2030 por la reforma de cesantía y vejez). Consulta la calculadora Modalidad 40.` },
+  { id: 'lss-uma', cat: 'Otros', t: 'UMA, UMI y salarios mínimos: qué son y cómo se actualizan', kw: 'uma umi salario minimo conasami inegi actualizacion 1 febrero base calculo', fund: 'Ley para Determinar el Valor de la UMA; Art. 123 apartado A CPEUM',
+    txt: `La UMA es la referencia para cuotas, multas, exenciones y créditos; INEGI la publica cada enero y rige desde el 1° de febrero. Mensual = diaria × 30.4; anual = mensual × 12. Vigente en la app: diaria {umaD}, mensual {umaM}, anual {umaA}. La UMI de Infonavit sigue la UMA ({umi}). El salario mínimo general es {smg} y en la Zona Libre de la Frontera Norte {zlfn}; no se usa como base de cálculo de obligaciones (solo laboral).` },
+  // ---------------- Infonavit ----------------
+  { id: 'inf-aport', cat: 'Infonavit', t: 'Aportación patronal al Infonavit', kw: 'infonavit aportacion patronal 5% subcuenta vivienda bimestral tope 25 uma', fund: 'Art. 29 fr. II Ley del Infonavit',
+    txt: `El patrón aporta 5% del SBC del trabajador a la subcuenta de vivienda (tope de 25 UMA). Se paga bimestralmente junto con RCV (enero, marzo, mayo, julio, septiembre y noviembre) a más tardar el día 17 del mes siguiente al bimestre. No es descuento al trabajador.` },
+  { id: 'inf-desc', cat: 'Infonavit', t: 'Descuento Infonavit al trabajador: porcentaje, cuota fija y veces UMI', kw: 'descuento infonavit credito porcentaje cuota fija vsm umi seguro vivienda retencion aviso', fund: 'Arts. 29 fr. III y 97 Ley del Infonavit',
+    txt: `Si el trabajador tiene crédito, el patrón está obligado a retener (Art. 29 fr. III) con base en el aviso de retención: (1) % del SBC por los días del periodo; (2) cuota fija en pesos mensuales; (3) veces UMI, mensual = veces × UMI ({umi}) × 30.4 (calculado por periodo). Además se suma el seguro de daños/vivienda (aprox. $15 mensuales, editable en Ajustes). El patrón es responsable solidario si no retiene.` },
+  // ---------------- Contabilidad / otros ----------------
+  { id: 'nif-c6', cat: 'Contabilidad', t: 'NIF C-6: propiedades, planta y equipo', kw: 'nif c-6 propiedades planta equipo activo fijo depreciacion contable vida util valor residual', fund: 'NIF C-6 (CINIF)',
+    txt: `Los activos fijos se reconocen al costo de adquisición y se deprecian con base en su vida útil estimada y valor residual (método de línea recta, unidades producidas o saldos decrecientes). La depreciación contable es independiente de la fiscal; la diferencia genera impuestos diferidos (NIF D-4). Revisa vida útil y valor residual al menos al cierre de cada ejercicio.` },
+  { id: 'nif-d3', cat: 'Contabilidad', t: 'NIF D-3: beneficios a los empleados', kw: 'nif d-3 beneficios empleados obligaciones laborales provision aguinaldo prima antiguedad pasivo laboral', fund: 'NIF D-3 (CINIF)',
+    txt: `Se debe reconocer un pasivo por beneficios a corto plazo (aguinaldo, vacaciones, PTU) conforme se devengan, y por beneficios a largo plazo (prima de antigüedad, indemnizaciones, pensiones) con cálculo actuarial. Para PYMES el pasivo laboral se estima con estudio actuarial anual. Provisión mensual aproximada de aguinaldo = salario diario × días de aguinaldo ÷ 12.` },
+  { id: 'nif-b10', cat: 'Contabilidad', t: 'NIF B-10: efectos de la inflación', kw: 'nif b-10 inflacion entorno inflacionario 26% acumulada tres años reexpresion', fund: 'NIF B-10 (CINIF)',
+    txt: `La reexpresión de estados financieros solo se aplica en entorno inflacionario: inflación acumulada de los 3 ejercicios anuales anteriores igual o mayor al 26% (promedio anual ~8%). En entorno no inflacionario no se reconocen los efectos de la inflación, aunque se revela la inflación acumulada.` },
+  { id: 'fin-eq', cat: 'Contabilidad', t: 'Punto de equilibrio y razones de liquidez', kw: 'punto equilibrio margen contribucion liquidez corriente capital trabajo prueba acida costos fijos', fund: 'Análisis financiero',
+    txt: `Punto de equilibrio en unidades = costos fijos ÷ (precio − costo variable unitario); en pesos = costos fijos ÷ margen de contribución %. Liquidez corriente = activo circulante ÷ pasivo circulante (>1.5 es sana en general); capital de trabajo = AC − PC; prueba ácida = (AC − inventarios) ÷ PC. Ejemplo: CF $50,000, precio $100, CV $60 → equilibrio = 50,000/40 = 1,250 unidades.` },
+  { id: 'otr-isn', cat: 'Otros', t: 'Impuesto sobre nómina (ISN) estatal', kw: 'isn impuesto sobre nomina estatal 3% base remuneraciones pago mensual', fund: 'Leyes de Hacienda estatales',
+    txt: `Impuesto local sobre remuneraciones al trabajo personal subordinado. Tasa aproximada de 2% a 4% según la entidad (en CDMX 3%). La base incluye sueldos, aguinaldo, vales y demás prestaciones salvo exenciones locales. Se paga normalmente mensual (generalmente día 17 del mes siguiente). Ajusta la tasa de tu estado en la calculadora de Costo Total.` },
+  { id: 'otr-agenda', cat: 'Otros', t: 'Calendario básico de obligaciones mensuales', kw: 'obligaciones mensuales 17 dia declaracion iva isr imss diot retenciones calendario vencimientos', fund: 'Art. 5-D LIVA; Art. 14 LISR; Art. 39 LSS',
+    txt: `Día 17 del mes siguiente: pago provisional ISR, IVA, retenciones de ISR sueldos/honorarios/arrendamiento, DIOT y pago de cuotas IMSS. Día 17 de enero, marzo, mayo, julio, septiembre y noviembre: pago bimestral RCV e Infonavit. Día 3 del segundo mes: balanza de comprobación. Cuando el día cae en inhábil se recorre al siguiente hábil. Usa la pestaña Agenda para controlarlos.` },
+];
+
+/* ---------- Motor de búsqueda por relevancia ---------- */
+const nrm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const STOP = new Set('de la el los las un una unos unas y o u en que como cual cuales es son se por para con del al a mi me lo le su sus este esta esto ese cuanto cuanta cuantos cuantas hay puedo debo tengo si no mas muy ya sobre entre hacer'.split(' '));
+const stem = (w) => (w.length > 4 && w.endsWith('es') ? w.slice(0, -2) : w.length > 3 && w.endsWith('s') ? w.slice(0, -1) : w);
+const toks = (s) => new Set((nrm(s).match(/[a-z0-9%]+/g) || []).filter((w) => w.length > 1 && !STOP.has(w)).map(stem));
+const SYN_GROUPS = ['vale despensa prevision', 'sbc salario integrado cotizacion base', 'recargo mora extemporaneo', 'hora extra extraordinario', 'finiquito liquidacion indemnizacion despido separacion', 'aguinaldo gratificacion', 'vacacion descanso', 'ptu utilidades reparto', 'infonavit vivienda credito', 'imss seguro social cuota', 'isr renta retencion', 'iva agregado', 'auto automovil vehiculo coche carro', 'viatico hospedaje alimentacion viaje', 'deduccion deducir deducible deducibilidad', 'factura cfdi comprobante', 'uma umi medida', 'nomina sueldo salario', 'resico confianza', 'incapacidad enfermedad subsidio', 'modalidad pension continuacion', 'depreciacion amortizacion activo inversion', 'multa sancion', 'actualizacion factor inpc']
+  .map((g) => [...toks(g)]);
+const expand = (qt) => { const out = new Set(); qt.forEach((t) => SYN_GROUPS.forEach((g) => { if (g.includes(t)) g.forEach((x) => { if (!qt.has(x)) out.add(x); }); })); return out; };
+const hit = (set, t) => (set.has(t) ? 1 : t.length >= 4 && [...set].some((x) => x.length >= 4 && (x.startsWith(t) || t.startsWith(x))) ? 0.6 : 0);
+function scoreDoc(qt, qx, title, kw, body) {
+  const tt = toks(title), kt = toks(kw), bt = toks(body); let s = 0;
+  qt.forEach((t) => { s += 5 * hit(tt, t) + 4 * hit(kt, t) + 1 * hit(bt, t); });
+  qx.forEach((t) => { s += 1.2 * hit(tt, t) + 1 * hit(kt, t) + 0.25 * hit(bt, t); });
+  return s;
+}
+const fillTpl = (txt, ind) => {
+  const v = { umaD: $m(ind.umaD), umaM: $m(ind.umaM), umaA: $m(ind.umaA), smg: $m(ind.smg), zlfn: $m(ind.zlfn), umi: $m(ind.umi), usd: $m(ind.usd), mora: fmt(ind.recMora), pror: fmt(ind.recPror), vales40M: $m(0.4 * ind.umaM), ag30: $m(30 * ind.umaD), pv15: $m(15 * ind.umaD), sep90: $m(90 * ind.umaD), ex5: $m(5 * ind.umaD), t25: $m(25 * ind.umaD), t3: $m(3 * ind.umaD) };
+  return txt.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
+};
+const IND_QA = [
+  { w: ['uma', 'unidad medida actualizacion'], f: (i) => [['UMA diaria', $m(i.umaD)], ['UMA mensual', $m(i.umaM)], ['UMA anual', $m(i.umaA)], ['Vales de despensa (40% UMA mensual)', $m(0.4 * i.umaM)], ['Tope SBC (25 UMA diarias)', $m(25 * i.umaD)], ['Aguinaldo exento (30 UMA)', $m(30 * i.umaD)], ['Prima vacacional / PTU exentas (15 UMA)', $m(15 * i.umaD)], ['Exención por año de servicio en separación (90 UMA)', $m(90 * i.umaD)], ['Horas extra: tope semanal exento (5 UMA)', $m(5 * i.umaD)]], k: 'umaD' },
+  { w: ['umi'], f: (i) => [['UMI (Infonavit)', $m(i.umi)], ['UMI mensual (× 30.4)', $m(i.umi * 30.4)]], k: 'umi' },
+  { w: ['salario minimo', 'smg', 'minimo', 'zlfn', 'frontera', 'zona libre'], f: (i) => [['Salario mínimo general diario', $m(i.smg)], ['Salario mínimo mensual (× 30.4)', $m(i.smg * 30.4)], ['Salario mínimo ZLFN diario', $m(i.zlfn)], ['Prima de antigüedad: tope diario (2 SMG)', $m(2 * i.smg)]], k: 'smg' },
+  { w: ['inpc', 'indice precios', 'indice nacional'], f: (i) => [['INPC más reciente', fmt(i.inpc, 3)]], k: 'inpc' },
+  { w: ['dolar', 'usd', 'tipo cambio', 'fix', 'divisa'], f: (i) => [['USD/MXN FIX', $m(i.usd)], ['EUR/MXN', $m(i.eur)]], k: 'usd' },
+  { w: ['euro', 'eur'], f: (i) => [['EUR/MXN', $m(i.eur)], ['USD/MXN FIX', $m(i.usd)]], k: 'eur' },
+  { w: ['tiie'], f: (i) => [['TIIE 28 días', fmt(i.tiie, 4) + '%']], k: 'tiie' },
+  { w: ['udi'], f: (i) => [['UDI', '$' + fmt(i.udi, 6)]], k: 'udi' },
+  { w: ['recargo', 'mora', 'prorroga'], f: (i) => [['Recargos por mora (mensual)', fmt(i.recMora) + '%'], ['Recargos por prórroga (mensual)', fmt(i.recPror) + '%'], ['Recargos 12 meses (mora)', fmt(i.recMora * 12) + '%'], ['Máximo 60 meses (mora)', fmt(i.recMora * 60) + '%']], k: 'recMora' },
+];
+function convertQuery(q, ind) {
+  const n = nrm(q).replace(/,/g, ''); const m = n.match(/(\d+(?:\.\d+)?)\s*(umas?|umis?|udis?|smg|salarios? minimos?|dolares|usd|euros?|pesos)?/);
+  if (!m) return null; const val = parseFloat(m[1]); if (!val) return null;
+  const U = [['umas?', 'UMA diaria', ind.umaD], ['umis?', 'UMI', ind.umi], ['udis?', 'UDI', ind.udi], ['smg|salarios? minimos?', 'SMG', ind.smg], ['dolares|usd', 'USD', ind.usd], ['euros?', 'EUR', ind.eur]];
+  const unit = U.find(([re]) => new RegExp('\\b(' + re + ')\\b').test(n)); if (!unit) return null;
+  const toUnit = /(a|en|cuant\w+)\s+(umas?|umis?|udis?|smg|dolares|usd|euros?)/.test(n) && /(\$|pesos|mxn)/.test(q.toLowerCase() + ' ' + n) && !new RegExp(m[1] + '\\s*(umas?|umis?|udis?|smg|dolares|usd|euros?)').test(n);
+  return toUnit ? [[`$${fmt(val)} MXN equivalen a`, `${fmt(val / unit[2], 4)} ${unit[1]}`]] : [[`${fmt(val, 2)} ${unit[1]} equivalen a`, $m(val * unit[2])]];
+}
+function askAssistant(q, data) {
+  const qt = toks(q), qx = expand(qt), ind = data.ind, nq = nrm(q), secs = [];
+  // 3. Indicadores vigentes (cifras exactas)
+  const qtRaw = new Set(nq.split(/[^a-z0-9]+/).map(stem));
+  const used = new Set();
+  IND_QA.forEach((d) => {
+    if (used.has(d.k)) return;
+    if (d.w.some((w) => (w.includes(' ') ? nq.includes(w) : qtRaw.has(stem(w))))) {
+      used.add(d.k); const meta = data.indMeta[d.k];
+      secs.push({ src: 'Indicadores vigentes', title: 'Valores actuales en la app', rows: d.f(ind), fund: meta ? (meta.src === 'banxico' ? `Fuente: Banxico (dato del ${meta.fecha})` : 'Capturado manualmente ' + fmtDT(meta.at)) : 'Valor de referencia — sincroniza o edita en Ajustes' });
+    }
+  });
+  const conv = convertQuery(q, ind); if (conv) secs.unshift({ src: 'Indicadores vigentes', title: 'Equivalencia', rows: conv, fund: 'Con los indicadores actuales de la app' });
+  const esAgenda = /venc|agenda|pendient|obligacion|calendario|proxim|este mes|esta semana/.test(nq);
+  // 1. Base de conocimiento (precargada + criterios propios)
+  const kb = [...KB_BASE, ...(data.criterios || []).map((c) => ({ ...c, mine: true }))];
+  const sc = kb.map((c) => ({ c, s: scoreDoc(qt, qx, c.t, c.kw + ' ' + c.cat, c.txt) })).filter((x) => x.s >= (esAgenda ? 10 : 4)).sort((a, b) => b.s - a.s);
+  if (sc.length) { const best = sc[0].s; sc.filter((x) => x.s >= best * 0.45).slice(0, 3).forEach(({ c }) => secs.push({ src: c.mine ? 'Mi criterio' : 'Base legal · ' + c.cat, title: c.t, fund: c.fund, body: fillTpl(c.txt, ind) })); }
+  // 2. Notas y noticias guardadas
+  const sv = data.favoritos.map((n) => ({ n, s: scoreDoc(qt, qx, n.title, data.notas[n.id] || '', (n.desc || '') + ' ' + (data.notas[n.id] || '')) })).filter((x) => x.s >= 3).sort((a, b) => b.s - a.s).slice(0, 2);
+  sv.forEach(({ n }) => { const nt = data.notas[n.id]; secs.push({ src: n.custom ? 'Mis notas' : 'Noticia guardada', title: n.title, body: (nt ? 'Mi nota: ' + nt : n.desc || '').slice(0, 360), fund: n.link || '', link: n.link }); });
+  // 4. Agenda de vencimientos
+  if (esAgenda || /presentar|declarar|hoy/.test(nq)) {
+    const mes = /este mes/.test(nq), sem = /semana/.test(nq), hoy = new Date();
+    const lim = sem ? 7 : mes ? 99 : 30;
+    const ag = [...genOcurrencias(), ...data.recordatorios.map((r) => ({ key: 'c|' + r.id, n: r.t, date: r.fecha, cat: r.cat }))]
+      .filter((o) => { const d = diasHasta(o.date); const okDia = mes ? (new Date(o.date + 'T00:00:00').getMonth() === hoy.getMonth() && new Date(o.date + 'T00:00:00').getFullYear() === hoy.getFullYear()) : d >= -10 && d <= lim; return okDia && data.agendaEstado[o.key] !== 'done'; })
+      .sort((a, b) => a.date.localeCompare(b.date));
+    secs.push({ src: 'Agenda', title: mes ? 'Pendientes de este mes' : sem ? 'Pendientes de los próximos 7 días' : 'Próximos vencimientos (30 días)', rows: ag.length ? ag.slice(0, 12).map((o) => { const d = diasHasta(o.date); return [`${new Date(o.date + 'T00:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })} · ${o.n}`, d < 0 ? 'VENCIDA' : d === 0 ? 'HOY' : `en ${d} d`]; }) : [['Sin pendientes en el periodo', '✔']], fund: 'Marca como presentadas en la pestaña Agenda' });
+  }
+  return secs;
+}
+const secText = (s) => `*${s.title}* (${s.src})` + (s.fund ? `\n_${s.fund}_` : '') + (s.body ? `\n${s.body}` : '') + (s.rows ? '\n' + s.rows.map(([a, b]) => `• ${a}: ${b}`).join('\n') : '');
+const SUGERIDAS = ['¿Tope de vales de despensa?', '¿Cómo calcular actualización CFF?', '¿Qué vence este mes?', '¿Exención horas extra?', '¿Cuánto es la UMA?', '¿Días de vacaciones por antigüedad?', '¿Requisitos para deducir un auto?', '¿Cuánto es el salario mínimo?'];
+
+function Asistente({ data, patch, toast, onClose }) {
+  const [msgs, setMsgs] = useState([{ r: 'bot', text: 'Hola, soy tu asistente fiscal y financiero. Funciono 100% en tu dispositivo (sin internet ni costo). Busco en la base legal, tus notas guardadas, los indicadores vigentes y tu agenda.', secs: [] }]);
+  const [q, setQ] = useState(''), [panel, setPanel] = useState(false), [form, setForm] = useState(false);
+  const [c, setC] = useState({ t: '', cat: 'Otros', kw: '', fund: '', txt: '' });
+  const endRef = useRef(), fileRef = useRef();
+  useEffect(() => { if (endRef.current) endRef.current.scrollIntoView({ block: 'end' }); }, [msgs]);
+  const send = (text) => {
+    const t = (text ?? q).trim(); if (!t) return; setQ('');
+    const secs = askAssistant(t, data);
+    setMsgs((m) => [...m, { r: 'me', text: t }, secs.length ? { r: 'bot', text: `Encontré ${secs.length} resultado${secs.length > 1 ? 's' : ''} relevante${secs.length > 1 ? 's' : ''}:`, secs, q: t } : { r: 'bot', text: 'No encontré una respuesta en mi base local. Prueba con otras palabras clave o agrega el criterio con “+ Nuevo Criterio” para que la próxima vez lo encuentre.', secs: [], q: t }]);
+  };
+  const copy = async (m) => toast((await copyText(`*Asistente MonitorFiscalMX*\nPregunta: ${m.q}\n\n` + m.secs.map(secText).join('\n\n') + '\n\n— Referencia orientativa; valida con la normatividad vigente.')) ? 'Respuesta copiada — pégala en WhatsApp' : 'No se pudo copiar');
+  const saveC = () => {
+    if (!c.t.trim() || !c.txt.trim()) return toast('Título y explicación son obligatorios');
+    patch((d) => ({ criterios: [...d.criterios, { id: 'u' + uid(), custom: true, cat: c.cat, t: c.t.trim(), kw: c.kw.trim(), fund: c.fund.trim(), txt: c.txt.trim(), createdAt: new Date().toISOString() }] }));
+    setC({ t: '', cat: 'Otros', kw: '', fund: '', txt: '' }); setForm(false); toast('Criterio agregado a la base');
+  };
+  const exportKB = async () => { const r = await exportFile(`monitorfiscal-conocimiento-${localISO()}.json`, JSON.stringify({ app: 'MonitorFiscalMX', tipo: 'conocimiento', version: 1, exportedAt: new Date().toISOString(), criterios: data.criterios }, null, 2), 'Conocimiento MonitorFiscalMX'); if (r.ok) toast(r.via === 'share' ? 'Conocimiento compartido' : 'Conocimiento descargado (.json)'); };
+  const importKB = async (e) => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+    try {
+      const j = JSON.parse(await f.text()); const arr = Array.isArray(j) ? j : j.criterios || (j.data && j.data.criterios);
+      if (!Array.isArray(arr)) throw new Error();
+      const seen = new Set([...KB_BASE, ...data.criterios].map((x) => nrm(x.t) + '|' + nrm(x.cat))), add = [];
+      arr.forEach((x) => { if (!x || !x.t || !x.txt) return; const k = nrm(x.t) + '|' + nrm(x.cat || 'Otros'); if (seen.has(k)) return; seen.add(k); add.push({ id: 'u' + uid(), custom: true, cat: KB_CATS.includes(x.cat) ? x.cat : 'Otros', t: String(x.t), kw: String(x.kw || ''), fund: String(x.fund || ''), txt: String(x.txt), createdAt: new Date().toISOString() }); });
+      patch((d) => ({ criterios: [...d.criterios, ...add] })); toast(`Importados ${add.length} criterios nuevos · ${arr.length - add.length} duplicados omitidos`);
+    } catch (er) { toast('Archivo inválido: se esperaba un .json de conocimiento'); }
+  };
+  const badge = { 'Indicadores vigentes': 'bg-emerald-100 text-emerald-700', Agenda: 'bg-amber-100 text-amber-800', 'Mi criterio': 'bg-violet-100 text-violet-700', 'Mis notas': 'bg-sky-100 text-sky-700', 'Noticia guardada': 'bg-sky-100 text-sky-700' };
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-100 flex flex-col max-w-xl mx-auto fadein">
+      <header className="bg-slate-900 text-white safe-top shrink-0">
+        <div className="px-3 h-14 flex items-center gap-2">
+          <button onClick={onClose} className="w-11 h-11 flex items-center justify-center -ml-2" aria-label="Cerrar"><Icon name="ChevronLeft" size={24} /></button>
+          <div className="flex-1 leading-tight"><div className="font-bold text-[15px]">Asistente Fiscal y Financiero</div><div className="text-[11px] text-emerald-300">Local · gratis · funciona sin internet</div></div>
+          <button onClick={() => setForm(true)} className="min-h-[40px] px-3 rounded-xl bg-sky-600 text-[13px] font-semibold">+ Nuevo Criterio</button>
+          <button onClick={() => setPanel(!panel)} className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center" aria-label="Conocimiento"><Icon name="Database" size={18} /></button>
+        </div>
+        {panel && <div className="px-3 pb-3 space-y-2 fadein">
+          <div className="grid grid-cols-2 gap-2"><Btn kind="ghost" icon="Download" onClick={exportKB} className="!text-[12px] !px-2">Exportar Conocimiento (.json)</Btn><Btn kind="ghost" icon="Upload" onClick={() => fileRef.current.click()} className="!text-[12px] !px-2">Importar Conocimiento (.json)</Btn></div>
+          <input ref={fileRef} type="file" accept=".json,application/json" className="hidden" onChange={importKB} />
+          <div className="text-[11px] text-slate-400">Base: {KB_BASE.length} fichas precargadas + {data.criterios.length} criterios propios · {data.favoritos.length} guardadas. La importación fusiona sin duplicar ni borrar. Tus criterios van en el respaldo para Drive.</div>
+          {data.criterios.length > 0 && <div className="max-h-32 overflow-y-auto rounded-lg bg-slate-800 p-2 space-y-1">{data.criterios.map((x) => <div key={x.id} className="flex items-center gap-2 text-[12px]"><span className="flex-1 truncate">{x.cat} · {x.t}</span><button onClick={() => confirm('¿Eliminar este criterio?') && patch((d) => ({ criterios: d.criterios.filter((z) => z.id !== x.id) }))} className="text-rose-300 w-8 h-8"><Icon name="Trash2" size={15} /></button></div>)}</div>}
+        </div>}
+      </header>
+      <main className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+        {msgs.map((m, i) => m.r === 'me' ? (
+          <div key={i} className="flex justify-end"><div className="max-w-[85%] bg-sky-600 text-white rounded-2xl rounded-br-md px-4 py-2.5 text-[15px]">{m.text}</div></div>
+        ) : (
+          <div key={i} className="flex flex-col items-start gap-2 max-w-[95%]">
+            <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-md px-4 py-2.5 text-[15px] text-slate-800">{m.text}</div>
+            {m.secs.map((s, j) => (
+              <div key={j} className="bg-white border border-slate-200 rounded-2xl p-3 w-full shadow-sm">
+                <span className={`text-[10.5px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${badge[s.src] || 'bg-slate-100 text-slate-600'}`}>{s.src}</span>
+                <div className="font-semibold text-[15px] mt-1.5 leading-snug">{s.title}</div>
+                {s.fund && <div className="text-[12px] text-sky-700 italic mt-0.5 break-words">{s.fund}</div>}
+                {s.body && <p className="text-[14px] text-slate-700 mt-1.5 leading-relaxed whitespace-pre-line">{s.body}</p>}
+                {s.rows && <div className="mt-1.5 divide-y divide-slate-100">{s.rows.map(([a, b], k) => <div key={k} className="flex justify-between gap-3 py-1.5 text-[13.5px]"><span className="text-slate-600">{a}</span><span className="font-mono font-semibold text-right">{b}</span></div>)}</div>}
+                {s.link && <a href={s.link} target="_blank" rel="noopener" className="text-[12px] text-sky-700 font-semibold">Abrir fuente →</a>}
+              </div>))}
+            {m.secs.length > 0 && <button onClick={() => copy(m)} className="min-h-[44px] px-4 rounded-xl bg-emerald-600 text-white text-[13px] font-semibold flex items-center gap-2"><Icon name="Copy" size={16} />Copiar respuesta para WhatsApp</button>}
+          </div>))}
+        <div ref={endRef} />
+      </main>
+      <div className="bg-white border-t border-slate-200 shrink-0 safe-bottom">
+        <div className="flex gap-2 overflow-x-auto noscroll px-3 pt-2">{SUGERIDAS.map((s) => <button key={s} onClick={() => send(s)} className="shrink-0 min-h-[38px] px-3 rounded-full bg-slate-100 text-[12.5px] font-medium text-slate-700">{s}</button>)}</div>
+        <form className="flex gap-2 p-3" onSubmit={(e) => { e.preventDefault(); send(); }}>
+          <input className={inputCls} placeholder="Pregunta: aguinaldo, IVA, IMSS, UMA…" value={q} onChange={(e) => setQ(e.target.value)} enterKeyHint="send" />
+          <button type="submit" className="w-12 h-12 shrink-0 rounded-xl bg-sky-600 text-white flex items-center justify-center" aria-label="Enviar"><Icon name="SendHorizontal" size={20} /></button>
+        </form>
+      </div>
+      {form && <Sheet title="Nuevo criterio" onClose={() => setForm(false)}>
+        <div className="space-y-3">
+          <F label="Título" type="text" ph="Ej. Tope de deducción de gastos de representación" v={c.t} set={(v) => setC({ ...c, t: v })} />
+          <S label="Categoría" v={c.cat} set={(v) => setC({ ...c, cat: v })} options={KB_CATS.map((x) => [x, x])} />
+          <F label="Palabras clave (separadas por espacio)" type="text" ph="deduccion representacion tope" v={c.kw} set={(v) => setC({ ...c, kw: v })} />
+          <F label="Fundamento legal" type="text" ph="Art. 28 fr. … LISR" v={c.fund} set={(v) => setC({ ...c, fund: v })} />
+          <label className="block"><span className="block text-[13px] font-medium text-slate-600 mb-1">Explicación / ejemplo</span><textarea className="w-full min-h-[130px] p-3 rounded-xl border border-slate-300 text-[15px] focus:outline-none focus:ring-2 focus:ring-sky-500" value={c.txt} onChange={(e) => setC({ ...c, txt: e.target.value })} /></label>
+          <Btn className="w-full" icon="Save" onClick={saveC}>Guardar criterio</Btn>
+        </div></Sheet>}
+    </div>
+  );
+}
+
+/* =====================================================================
    12. APP
    ===================================================================== */
 const TABS = [['news', 'Noticias', 'Newspaper'], ['calc', 'Calculadoras', 'Calculator'], ['agenda', 'Agenda', 'CalendarCheck'], ['saved', 'Guardadas', 'Bookmark'], ['set', 'Ajustes', 'Settings']];
@@ -1128,7 +1398,7 @@ function App() {
   const [tab, setTab] = useState(() => { try { return localStorage.getItem('mfmx_tab') || 'news'; } catch (e) { return 'news'; } });
   const [news, setNews] = useState([]), [loadingNews, setLoadingNews] = useState(false);
   const [syncing, setSyncing] = useState(false), [msg, setMsg] = useState(''), [editK, setEditK] = useState(null), [mirrors, setMirrors] = useState([]);
-  const [calcKey, setCalcKey] = useState(0);
+  const [calcKey, setCalcKey] = useState(0), [asist, setAsist] = useState(false);
   const [snooze, setSnooze] = useState(() => { try { return +localStorage.getItem('mfmx_snooze') || 0; } catch (e) { return 0; } });
   const online = useOnline(), scrollRef = useRef(), toastT = useRef();
   const toast = useCallback((m) => { setMsg(m); clearTimeout(toastT.current); toastT.current = setTimeout(() => setMsg(''), 2600); }, []);
@@ -1211,6 +1481,9 @@ function App() {
       <nav className="bg-white border-t border-slate-200 shrink-0 safe-bottom"><div className="grid grid-cols-5">
         {TABS.map(([k, l, ic]) => <button key={k} onClick={() => { if (k === tab && k === 'calc') setCalcKey((x) => x + 1); setTab(k); }} className={`h-16 flex flex-col items-center justify-center gap-0.5 ${tab === k ? 'text-sky-700' : 'text-slate-400'}`}><span className={`px-4 py-1 rounded-full ${tab === k ? 'bg-sky-100' : ''}`}><Icon name={ic} size={22} /></span><span className="text-[10.5px] font-semibold">{l}</span></button>)}
       </div></nav>
+
+      {!asist && <button onClick={() => setAsist(true)} className="absolute right-3 z-40 w-12 h-12 rounded-full bg-slate-900/90 text-sky-300 shadow-lg border border-slate-700 flex items-center justify-center" style={{ bottom: 'calc(64px + env(safe-area-inset-bottom) + 12px)' }} aria-label="Asistente Fiscal y Financiero"><Icon name="Bot" size={22} /></button>}
+      {asist && <Asistente data={data} patch={patch} toast={toast} onClose={() => setAsist(false)} />}
 
       {msg && <div className="fixed left-0 right-0 bottom-24 flex justify-center px-4 z-[60] pointer-events-none fadein"><div className="bg-slate-900 text-white text-sm px-4 py-3 rounded-xl shadow-lg max-w-sm text-center">{msg}</div></div>}
 
