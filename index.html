@@ -807,6 +807,78 @@ function parseBanxico(j) {
   }
   return out;
 }
+/* =====================================================================
+   9b. RESUMEN EJECUTIVO LOCAL (sin APIs): limpieza de texto, síntesis extractiva y resaltado
+   ===================================================================== */
+const KEY_ACR = 'SAT|ISR|IVA|CFF|IMSS|Infonavit|Banxico|DOF|UMA|UMI|TIIE|INPC|RESICO|CFDI|SHCP|LISR|LFT|LSS|STPS|UDI|PIB|FED|ISN|PTU|REPSE|ANAM|CONASAMI|INEGI|CNBV|FMI|OCDE|T-MEC|USMCA';
+const MESES_RE = 'enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre';
+const HL_RE = new RegExp('(' + [
+  '(?:US|MX|CAD)?\\$\\s?\\d[\\d,]*(?:\\.\\d+)?(?:\\s?(?:mil\\s+)?(?:millones|millón|billones|mdp|mdd|mmdp|mmd|MXN|USD|pesos|dólares|dolares)(?:\\s+de\\s+(?:pesos|dólares|dolares))?)?',
+  '\\d[\\d,]*(?:\\.\\d+)?\\s?(?:mil\\s+)?(?:millones|billones|millón)\\s+de\\s+(?:pesos|dólares|dolares|euros)',
+  '\\d+(?:[.,]\\d+)?\\s?(?:%|por ciento|puntos base|pb\\b)',
+  '\\d{1,2}\\s+de\\s+(?:' + MESES_RE + ')(?:\\s+de\\s+(?:19|20)\\d{2})?',
+  '(?:' + MESES_RE + ')\\s+de\\s+(?:19|20)\\d{2}',
+  '\\b(?:19[89]\\d|20[0-4]\\d)\\b',
+  '\\b(?:' + KEY_ACR + ')\\b',
+].join('|') + ')', 'gi');
+const hlOk = (p) => !/^[A-Za-zÁÉÍÓÚÑáéíóúñ-]+$/.test(p) || /^(Infonavit|Banxico)$/.test(p) || p === p.toUpperCase();
+const hlSegs = (text) => String(text || '').split(HL_RE).map((p, i) => ({ t: p, b: i % 2 === 1 && hlOk(p) })).filter((x) => x.t);
+const Hl = ({ text }) => <>{hlSegs(text).map((s, i) => (s.b ? <strong key={i} className="font-bold text-slate-900">{s.t}</strong> : <React.Fragment key={i}>{s.t}</React.Fragment>))}</>;
+const hlWA = (text) => hlSegs(text).map((s) => (s.b ? `*${s.t}*` : s.t)).join('');
+
+const FILLER = [/\b(?:leer|lee|ver|conoce|descubre)\s+m[aá]s\b[^.\n]*/gi, /\b(?:read|continue)\s+(?:more|reading)\b[^.\n]*/gi, /\bcontin[uú]a\s+leyendo\b[^.\n]*/gi, /\bsigue\s+leyendo\b[^.\n]*/gi,
+  /\bThe post .{0,200}? appeared first on .*$/gim, /\[(?:…|\.\.\.)\]/g, /\b(?:Foto|Imagen|Cr[eé]dito|Fotograf[ií]a):[^.\n]*/gi, /\bte puede interesar\b[^.\n]*/gi, /\bhaz clic (?:aqu[ií]|en)\b[^.\n]*/gi];
+const BOILER = /(suscr[ií]b|newsletter|todos los derechos|copyright|cookies|s[ií]guenos|descarga la app|publicidad|advertisement|aviso de privacidad)/i;
+const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function cleanText(raw, title, source, gnews) {
+  if (!raw) return '';
+  source = (source || '').split(' · ')[0].trim(); // "El Economista · Sector financiero" → "El Economista"
+  let h = String(raw).replace(/<(script|style|noscript|iframe|figure|figcaption)[\s\S]*?<\/\1>/gi, ' ').replace(/<img[^>]*>/gi, ' ').replace(/<\/(p|div|li|h[1-6]|ul|ol|blockquote|tr)>/gi, '\n').replace(/<br\s*\/?>/gi, '\n');
+  let t = ''; try { t = new DOMParser().parseFromString(h, 'text/html').body.textContent || ''; } catch (e) { t = h.replace(/<[^>]+>/g, ' '); }
+  for (let k = 0; k < 2 && /&[#\w]+;/.test(t); k++) { try { t = new DOMParser().parseFromString(t, 'text/html').body.textContent || t; } catch (e) { break; } }
+  t = t.replace(/[ ​  ]/g, ' ');
+  const sr = source ? new RegExp('(?:^|\\s)(?:[-–—|·]\\s*)?(?:Fuente:\\s*)?' + escRe(source) + '\\s*$', 'i') : null, sl = source ? new RegExp('^(?:Fuente:\\s*)?' + escRe(source) + '\\s*[-–—|:·]\\s*', 'i') : null;
+  const tl = (title || '').toLowerCase().trim(), out = [];
+  t.split(/\n+/).forEach((line) => {
+    if (gnews && / {2,}/.test(line)) line = line.split(/ {2,}/)[0]; // Google News: "Titular  Medio"
+    let l = line.replace(/\s+/g, ' ').trim(); FILLER.forEach((re) => { l = l.replace(re, ' '); });
+    l = l.replace(/\s+/g, ' ').trim(); if (sr) l = l.replace(sr, '').trim(); if (sl) l = l.replace(sl, '').trim();
+    if (tl && l.toLowerCase().startsWith(tl)) l = l.slice(tl.length).replace(/^[\s\-–—|:.]+/, '').trim();
+    if (!l || l.length < 3 || l.toLowerCase() === tl || (source && l.toLowerCase() === source.toLowerCase()) || BOILER.test(l)) return;
+    if (l.length < 220 && !/[.!?…:"”)]$/.test(l)) l += '.';
+    out.push(l);
+  });
+  return out.join('\n').slice(0, 4500);
+}
+const ABBR = /\b(Art|Arts|Fr|Frac|Núm|Num|No|Dr|Dra|Lic|Sr|Sra|Mtro|Ing|vs|etc|aprox|Inc|Corp|Co|Mr|Mrs|EE\.UU|U\.S|S\.A)\.\s/g;
+function splitSentences(p) {
+  const safe = p.replace(ABBR, '$1<DOT> ');
+  let parts; try { parts = safe.split(/(?<=[.!?…])\s+(?=[A-ZÁÉÍÓÚÑ¿¡"“'0-9$])/); } catch (e) { parts = safe.split(/(?<=[.!?])\s+/); }
+  return parts.map((x) => x.replace(/<DOT>/g, '.').trim()).filter(Boolean);
+}
+const reCount = (s, re) => (s.match(re) || []).length;
+const RE_MONEY = /\$\s?\d|\d\s?(?:millones|billones)|\bpesos\b|dólares|\bmdp\b/gi, RE_PCT = /\d+(?:[.,]\d+)?\s?(?:%|por ciento|puntos base)/gi;
+const RE_DATE = new RegExp('\\b(?:' + MESES_RE + ')\\b|\\b(?:19|20)\\d{2}\\b', 'gi'), RE_ACR = new RegExp('\\b(?:' + KEY_ACR + ')\\b', 'g');
+function scoreSentence(s, idx) {
+  let sc = 3 * Math.min(2, reCount(s, RE_MONEY)) + 2 * Math.min(2, reCount(s, RE_PCT)) + 2 * Math.min(2, reCount(s, RE_DATE)) + 2 * Math.min(3, reCount(s, RE_ACR)) + Math.min(2, reCount(s, /\d+/g) * 0.3);
+  const L = s.length; sc += L >= 60 && L <= 220 ? 1.5 : L < 40 ? -2 : L > 320 ? -1.5 : 0;
+  sc += idx === 0 ? 1.5 : idx === 1 ? 0.8 : 0; return sc;
+}
+const truncWords = (s, n) => (s.length <= n ? s : s.slice(0, n).replace(/\s+\S*$/, '') + '…');
+const SUM_CACHE = new Map();
+function summarize(n) {
+  const full = (n.full || n.desc || '').trim(), key = n.id + ':' + full.length;
+  if (SUM_CACHE.has(key)) return SUM_CACHE.get(key);
+  const tt = toks(n.title), seen = new Set(), sents = [];
+  full.split(/\n+/).forEach((p) => splitSentences(p).forEach((x) => { const k = nrm(x); if (x.length >= 25 && !seen.has(k)) { seen.add(k); sents.push(x); } }));
+  const cand = sents.map((s, i) => ({ s, i, sc: scoreSentence(s, i) })).filter((x) => { const st = toks(x.s); let inter = 0; st.forEach((w) => tt.has(w) && inter++); return !(st.size && inter / Math.max(1, Math.min(st.size, tt.size)) > 0.85); });
+  const nb = full.length < 320 ? 2 : 3, top = cand.sort((a, b) => b.sc - a.sc).slice(0, nb).sort((a, b) => a.i - b.i).map((x) => truncWords(x.s, 240));
+  const onlyTitle = !top.length, words = (full || n.title).split(/\s+/).filter(Boolean).length;
+  const r = { bullets: top, onlyTitle, para: onlyTitle ? `${n.title}${/[.!?]$/.test(n.title) ? '' : '.'} Nota de ${n.source}; el feed solo entrega el titular, abre la fuente original para el detalle.` : '', full, mins: Math.max(1, Math.ceil(words / 200)) };
+  SUM_CACHE.set(key, r); return r;
+}
+const resumenWA = (n) => { const s = summarize(n); return `*${n.title}*\n` + (s.bullets.length ? s.bullets.map((b) => '• ' + hlWA(b)).join('\n') : hlWA(s.para)) + `\n\nFuente: ${n.source} · ${n.link}\n— MonitorFiscalMX`; };
+
 async function fetchFeed(feed) {
   const r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url));
   const j = await r.json(); if (j.status !== 'ok') throw new Error(j.message || 'feed no disponible');
@@ -814,7 +886,8 @@ async function fetchFeed(feed) {
     let title = stripHtml(it.title), source = feed.name.replace(/^Google News · /, '');
     if (feed.url.indexOf('news.google.com') > -1) { const m = title.match(/^(.*) - ([^-]+)$/); if (m) { title = m[1]; source = m[2]; } }
     const date = new Date((it.pubDate || '').replace(' ', 'T') + 'Z');
-    return { id: hashStr(it.link || it.guid || title), title, link: it.link, source, cat: feed.cat, date: isNaN(date) ? new Date().toISOString() : date.toISOString(), desc: stripHtml(it.description || it.content || '').slice(0, 260), thumb: it.thumbnail || '' };
+    const gnw = feed.url.indexOf('news.google.com') > -1, c1 = cleanText(it.content, title, source, gnw), c2 = cleanText(it.description, title, source, gnw), full = c1.length >= c2.length ? c1 : c2; // texto más completo entre content y description
+    return { id: hashStr(it.link || it.guid || title), title, link: it.link, source, cat: feed.cat, date: isNaN(date) ? new Date().toISOString() : date.toISOString(), desc: full.replace(/\n+/g, ' ').slice(0, 260), full, thumb: it.thumbnail || '' };
   });
 }
 
@@ -890,7 +963,8 @@ function Cintillo({ data, onEdit, onSync, syncing }) {
   );
 }
 function NewsView({ data, patch, news, loadingNews, refresh, toast, online, onSync, syncing, editInd }) {
-  const [cat, setCat] = useState('all'), [q, setQ] = useState('');
+  const [cat, setCat] = useState('all'), [q, setQ] = useState(''), [reading, setReading] = useState(null);
+  const rn = reading && news.find((x) => x.id === reading);
   const favIds = useMemo(() => new Set(data.favoritos.map((x) => x.id)), [data.favoritos]);
   const list = useMemo(() => news.filter((n) => (cat === 'all' || n.cat === cat) && (!q || (n.title + ' ' + n.source + ' ' + n.desc).toLowerCase().includes(q.toLowerCase()))), [news, cat, q]);
   const toggleFav = (n) => patch((d) => ({ favoritos: d.favoritos.some((x) => x.id === n.id) ? d.favoritos.filter((x) => x.id !== n.id) : [{ ...n, savedAt: new Date().toISOString() }, ...d.favoritos] }));
@@ -909,16 +983,37 @@ function NewsView({ data, patch, news, loadingNews, refresh, toast, online, onSy
       {list.length === 0 && <Card className="text-center text-slate-500 text-sm py-8">{loadingNews ? 'Cargando noticias…' : news.length ? 'Sin resultados para tu búsqueda.' : 'Aún no hay noticias. Conéctate y toca actualizar.'}</Card>}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 items-start">{list.slice(0, 120).map((n) => (
         <Card key={n.id} className="fadein">
-          <div className="flex items-center gap-2 text-[11px] mb-1"><span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-semibold">{CAT_LABEL[n.cat]}</span><span className="text-slate-500 truncate">{n.source} · {timeAgo(n.date)}</span></div>
-          <a href={n.link} target="_blank" rel="noopener" className="font-semibold text-[15px] leading-snug text-slate-900 clamp3 block">{n.title}</a>
-          {n.desc && n.desc !== n.title && <p className="text-[13px] text-slate-500 mt-1 clamp2">{n.desc}</p>}
+          {(() => { const sm = summarize(n); return (<>
+            <div className="flex items-center gap-2 text-[11px] mb-1"><span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-semibold shrink-0">{CAT_LABEL[n.cat]}</span><span className="text-slate-500 truncate">{n.source} · {timeAgo(n.date)}</span><span className="ml-auto shrink-0 text-slate-400 flex items-center gap-1"><Icon name="Clock" size={12} />Lectura {sm.mins} min</span></div>
+            <button onClick={() => setReading(n.id)} className="font-semibold text-[15px] leading-snug text-slate-900 clamp3 block text-left">{n.title}</button>
+            {sm.bullets.length ? <ul className="mt-2 space-y-1.5">{sm.bullets.map((b, i) => <li key={i} className="flex gap-2 text-[13.5px] leading-snug text-slate-600"><span className="text-sky-500 mt-0.5">•</span><span><Hl text={b} /></span></li>)}</ul>
+              : <p className="text-[13.5px] leading-snug text-slate-500 mt-2"><Hl text={sm.para} /></p>}
+          </>); })()}
           <div className="flex gap-2 mt-3">
-            <a href={n.link} target="_blank" rel="noopener" className="flex-1 min-h-[44px] rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold flex items-center justify-center gap-2"><Icon name="ExternalLink" size={16} />Leer</a>
-            <button onClick={() => { toggleFav(n); toast(favIds.has(n.id) ? 'Quitada de Guardadas' : 'Guardada para leer sin internet'); }} className={`w-12 min-h-[44px] rounded-xl flex items-center justify-center ${favIds.has(n.id) ? 'bg-amber-400 text-slate-900' : 'bg-slate-100 text-slate-700'}`} aria-label="Guardar"><Icon name="Star" size={18} /></button>
-            <a href={'https://translate.google.com/translate?sl=auto&tl=es&u=' + encodeURIComponent(n.link)} target="_blank" rel="noopener" className="px-3 min-h-[44px] rounded-xl bg-slate-50 text-slate-500 text-xs font-semibold flex items-center gap-1" aria-label="Traducir con Google Translate"><Icon name="Languages" size={15} />Traducir</a>
-            <a href={waLink(`*${n.title}*\n${n.link}\n— MonitorFiscalMX`)} target="_blank" rel="noopener" className="w-12 min-h-[44px] rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center" aria-label="WhatsApp"><Icon name="Send" size={18} /></a>
+            <button onClick={() => setReading(n.id)} className="flex-1 min-h-[44px] rounded-xl bg-sky-600 text-white text-sm font-semibold flex items-center justify-center gap-2"><Icon name="BookOpen" size={16} />Leer resumen</button>
+            <a href={n.link} target="_blank" rel="noopener" className="flex-1 min-h-[44px] rounded-xl bg-slate-100 text-slate-700 text-sm font-semibold flex items-center justify-center gap-2"><Icon name="ExternalLink" size={16} />Fuente original</a>
+          </div>
+          <div className="flex gap-2 mt-2">
+            <button onClick={() => { toggleFav(n); toast(favIds.has(n.id) ? 'Quitada de Guardadas' : 'Guardada para leer sin internet'); }} className={`flex-1 min-h-[40px] rounded-xl text-xs font-semibold flex items-center justify-center gap-1 ${favIds.has(n.id) ? 'bg-amber-400 text-slate-900' : 'bg-slate-50 text-slate-600'}`} aria-label="Guardar"><Icon name="Star" size={15} />{favIds.has(n.id) ? 'Guardada' : 'Guardar'}</button>
+            <a href={'https://translate.google.com/translate?sl=auto&tl=es&u=' + encodeURIComponent(n.link)} target="_blank" rel="noopener" className="flex-1 min-h-[40px] rounded-xl bg-slate-50 text-slate-500 text-xs font-semibold flex items-center justify-center gap-1" aria-label="Traducir con Google Translate"><Icon name="Languages" size={15} />Traducir</a>
+            <a href={waLink(resumenWA(n))} target="_blank" rel="noopener" className="flex-1 min-h-[40px] rounded-xl bg-emerald-50 text-emerald-700 text-xs font-semibold flex items-center justify-center gap-1" aria-label="WhatsApp"><Icon name="Send" size={15} />WhatsApp</a>
           </div>
         </Card>))}</div>
+      {rn && <Sheet title="Resumen ejecutivo" onClose={() => setReading(null)}>
+        {(() => { const sm = summarize(rn), paras = sm.full ? sm.full.split(/\n+/).filter(Boolean) : []; return (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-[11px]"><span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-semibold">{CAT_LABEL[rn.cat]}</span><span className="text-slate-500">{rn.source} · {timeAgo(rn.date)}</span><span className="ml-auto text-slate-400 flex items-center gap-1"><Icon name="Clock" size={12} />Lectura {sm.mins} min</span></div>
+            <h2 className="text-lg font-bold leading-snug">{rn.title}</h2>
+            <div className="rounded-xl bg-sky-50 p-3"><div className="text-[11px] font-bold uppercase tracking-wide text-sky-700 mb-1.5">Puntos clave</div>
+              {sm.bullets.length ? <ul className="space-y-2">{sm.bullets.map((b, i) => <li key={i} className="flex gap-2 text-[14.5px] leading-snug text-slate-700"><span className="text-sky-500">•</span><span><Hl text={b} /></span></li>)}</ul> : <p className="text-[14.5px] text-slate-700"><Hl text={sm.para} /></p>}</div>
+            {paras.length > 0 && !sm.onlyTitle && <div><div className="text-[11px] font-bold uppercase tracking-wide text-slate-500 mb-1.5">Texto del artículo</div><div className="space-y-2.5 text-[14.5px] leading-relaxed text-slate-700">{paras.map((p, i) => <p key={i}><Hl text={p} /></p>)}</div></div>}
+            {sm.onlyTitle && <Note>El feed solo incluye el titular. Abre la fuente original para leer la nota completa.</Note>}
+            <div className="grid grid-cols-1 gap-2 pt-1">
+              <Btn kind="green" icon="Copy" onClick={async () => toast((await copyText(resumenWA(rn))) ? 'Resumen copiado — pégalo en WhatsApp' : 'No se pudo copiar')}>Copiar resumen para WhatsApp</Btn>
+              <a href={rn.link} target="_blank" rel="noopener" className="min-h-[48px] rounded-xl bg-slate-100 text-slate-800 font-semibold text-[15px] flex items-center justify-center gap-2"><Icon name="ExternalLink" size={18} />Fuente original</a>
+            </div>
+          </div>); })()}
+      </Sheet>}
     </div>
   );
 }
